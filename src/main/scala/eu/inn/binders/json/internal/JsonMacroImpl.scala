@@ -10,28 +10,33 @@ trait JsonMacroImpl {
   import c.universe._
 
   def setProduct[O: c.WeakTypeTag](name: c.Tree, value: c.Tree): c.Tree = {
-
-    val thisTerm = newTermName(c.fresh("$this"))
-    val jsonGeneratorTerm = newTermName(c.fresh("$jg"))
-
-    val vals = List(
-      ValDef(Modifiers(), thisTerm, TypeTree(), c.prefix.tree),
-      ValDef(Modifiers(), jsonGeneratorTerm, TypeTree(), Select(Ident(thisTerm), newTermName("jsonGenerator")))
-    )
-
-    //val tpe = weakTypeTag[O].tpe
-    //println("setters: " + tpe)
     val block = Block(
-      vals ++
       List(
-        Apply(Select(Ident(jsonGeneratorTerm), newTermName("writeObjectFieldStart")),List(name)),
-        Apply(Select(Ident(thisTerm), newTermName("bind")), List(value)),
-        Apply(Select(Ident(jsonGeneratorTerm), newTermName("writeEndObject")),List())
+        Apply(Select(c.prefix.tree, newTermName("beginObject")),List(name)),
+        Apply(Select(c.prefix.tree, newTermName("bind")), List(value))
       ),
-      Literal(Constant())
+      Apply(Select(c.prefix.tree, newTermName("endObject")),List())
     )
+    // println(block)
+    block
+  }
 
-    println(block)
+  def setSequence[O: c.WeakTypeTag](name: c.Tree, value: c.Tree): c.Tree = {
+    val elemTerm = newTermName(c.fresh("$elem"))
+    val block = Block(
+      List(
+        Apply(Select(c.prefix.tree, newTermName("beginArray")),List(name)),
+        Apply(Select(value, newTermName("map")), List(
+          Function( // element ⇒
+            List(ValDef(Modifiers(Flag.PARAM), elemTerm, TypeTree(), EmptyTree)),
+            Apply(Select(c.prefix.tree, newTermName("bindArgs")), List(Ident(elemTerm)))
+          )
+        ))
+        //
+      ),
+      Apply(Select(c.prefix.tree, newTermName("endArray")),List())
+    )
+    // println(block)
     block
   }
 }
