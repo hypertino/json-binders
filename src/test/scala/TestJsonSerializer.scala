@@ -2,7 +2,7 @@
 import java.io.ByteArrayOutputStream
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory}
-import eu.inn.binders.json.JsonSerializer
+import eu.inn.binders.json.{JsonDeserializer, JsonSerializer}
 import eu.inn.binders.naming.PlainConverter
 import org.scalatest.{FlatSpec, Matchers}
 import eu.inn.binders._
@@ -55,5 +55,33 @@ class TestJsonSerializer extends FlatSpec with Matchers {
     //val jg = new JsonFactory.
 
     assert(s == """{"a":[1,2,3]}""")
+  }
+
+  "Test " should " should be able to deserialize" in {
+
+    val jf = new JsonFactory()
+    val jp = jf.createParser("""{"innerStrVal":"bebe","x":67}""")
+
+    val ds = new JsonDeserializer[PlainConverter](jp)
+
+    val t = ds.unbind[Test1]
+    //jf.create
+    //val jg = new JsonFactory.
+
+    assert(t == Test1("bebe", 67))
+  }
+
+  "Test " should " should be able to deserialize 1" in {
+
+    val jf = new JsonFactory()
+    val jp = jf.createParser("""123""")
+
+    val ds = new JsonDeserializer[PlainConverter](jp)
+
+    val t = ds.unbind[String]
+    //jf.create
+    //val jg = new JsonFactory.
+
+    assert(t === "123")
   }
 }

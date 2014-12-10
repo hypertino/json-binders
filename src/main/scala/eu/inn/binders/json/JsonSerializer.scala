@@ -13,15 +13,13 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
 
   def setString(name: String, value: String): Unit = jsonGenerator.writeStringField(name, value)
 
-  def setString(index: Int, value: String): Unit = jsonGenerator.writeString(value)
+  def addString(value: String): Unit = jsonGenerator.writeString(value)
 
   def setInteger(name: String, value: Int): Unit = jsonGenerator.writeNumberField(name, value)
 
-  def setInteger(index: Int, value: Int): Unit = jsonGenerator.writeNumber(value)
+  def addInteger(value: Int): Unit = jsonGenerator.writeNumber(value)
 
   def setProduct[T <: Product](name: String, value: T) = macro JsonMacro.setProduct[T]
-
-  //def setInteger(index: Int, value: String) = setInteger(null, value)
 
   def setSequence[T](name: String, value: Seq[T]) = macro JsonMacro.setSequence[T]
 
@@ -46,11 +44,4 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
   def endArray() = {
     jsonGenerator.writeEndArray()
   }
-
-  /*{
-    jsonGenerator.writeObjectFieldStart(name)
-    import eu.inn.binders._
-    this.bind(value)
-    jsonGenerator.writeEndObject()
-  }*/
 }

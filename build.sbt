@@ -14,6 +14,8 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.10.14" % "test"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
 
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4"
+
 libraryDependencies += "eu.inn" %% "binders-core" % "0.3.0"
 
 libraryDependencies += "com.google.code.findbugs" % "jsr305" % "1.3.+"
