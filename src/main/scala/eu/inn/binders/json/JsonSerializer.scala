@@ -3,9 +3,8 @@ package eu.inn.binders.json
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
 import eu.inn.binders.json.internal.JsonMacro
-import eu.inn.binders.naming.Converter
+import eu.inn.binders.naming.{Converter, PlainConverter}
 import scala.language.experimental.macros
-import scala.reflect.runtime.universe._
 
 class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends Serializer[C]{
 
@@ -22,6 +21,8 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
   def setProduct[T <: Product](name: String, value: T) = macro JsonMacro.setProduct[T]
 
   def setSequence[T](name: String, value: Seq[T]) = macro JsonMacro.setSequence[T]
+
+  def setNull(name: String) = jsonGenerator.writeNullField(name)
 
   def beginObject(name: String) = {
     if (name == null)
@@ -44,4 +45,9 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
   def endArray() = {
     jsonGenerator.writeEndArray()
   }
+}
+
+object JsonSerializer {
+  implicit val defaultConverter = new PlainConverter with Converter
+  def apply[C <: Converter](jsonGenerator: JsonGenerator)(implicit c: Converter) = new JsonSerializer[C](jsonGenerator)
 }
