@@ -1,6 +1,7 @@
 package eu.inn.binders.json.internal
 
 import eu.inn.binders.json.JsonSerializer
+import eu.inn.binders.naming.Converter
 
 import scala.language.experimental.macros
 import scala.language.reflectiveCalls
@@ -15,7 +16,7 @@ trait JsonMacroImpl {
     Block()
   }
 
-  def toJson[O: c.WeakTypeTag]: c.Tree = {
+  def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
 
     val thisTerm = newTermName(c.fresh("$this"))
     val objTerm = newTermName("$obj")
@@ -29,10 +30,13 @@ trait JsonMacroImpl {
 
     val serializeBlock =
       Block(
-        // val js = JsonSerializer.apply(jg)
+        // val js = JsonSerializer.apply[C](jg)
         ValDef(Modifiers(), jsonSerializerTerm, TypeTree(),
           Apply(
-            Select(Ident(typeOf[JsonSerializer.type].termSymbol), newTermName("apply")),
+            TypeApply(
+              Select(Ident(typeOf[JsonSerializer.type].termSymbol), newTermName("apply")),
+              List(Ident(weakTypeOf[C].typeSymbol))
+            ),
             List(Ident(jsonGeneratorTerm))
           )
         ),
@@ -54,20 +58,8 @@ trait JsonMacroImpl {
     val block = Block(vals,
       Apply(Select(Ident(typeOf[JsonMacro.type].termSymbol), newTermName("wrapObjectGen")), List(genCodeFunc))
     )
-    println(block)
+    // println(block)
     block
-  }
-
-  protected def writeNull[O: c.WeakTypeTag](name: c.Tree, value: c.Tree, nonNullBlock: c.Tree): c.Tree = {
-    if (weakTypeTag[O].tpe <:< typeOf[Option[_]]) {
-      If(
-        Select(value, newTermName("isDefined")),
-        nonNullBlock,
-        Apply(Select(c.prefix.tree, newTermName("setNull")),List(name))
-      )
-    }
-    else
-      nonNullBlock
   }
 
   protected def optionGetter[O: c.WeakTypeTag](value: c.Tree): c.Tree = {
@@ -86,17 +78,26 @@ trait JsonMacroImpl {
       ),
       Apply(Select(c.prefix.tree, newTermName("endObject")),List())
     )
-    val block = writeNull[O](name, value, nonNullBlock)
+
+    val block = if (weakTypeTag[O].tpe <:< typeOf[Option[_]]) {
+      If(
+        Select(value, newTermName("isDefined")),
+        nonNullBlock,
+        Apply(Select(c.prefix.tree, newTermName("setNull")),List(name))
+      )
+    }
+    else
+      nonNullBlock
     // println(block)
     block
   }
 
   def setSequence[O: c.WeakTypeTag](name: c.Tree, value: c.Tree): c.Tree = {
     val elemTerm = newTermName(c.fresh("$elem"))
-    val nonNullBlock = Block(
+    val block = Block(
       List(
         Apply(Select(c.prefix.tree, newTermName("beginArray")),List(name)),
-        Apply(Select(optionGetter[O](value), newTermName("map")), List(
+        Apply(Select(value, newTermName("map")), List(
           Function( // element ⇒
             List(ValDef(Modifiers(Flag.PARAM), elemTerm, TypeTree(), EmptyTree)),
             Apply(Select(c.prefix.tree, newTermName("bindArgs")), List(Ident(elemTerm)))
@@ -106,7 +107,6 @@ trait JsonMacroImpl {
       ),
       Apply(Select(c.prefix.tree, newTermName("endArray")),List())
     )
-    val block = writeNull[O](name, value, nonNullBlock)
     // println(block)
     block
   }

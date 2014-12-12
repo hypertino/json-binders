@@ -3,6 +3,7 @@ package eu.inn.binders.json.internal
 import java.io.ByteArrayOutputStream
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonGenerator}
+import eu.inn.binders.naming.Converter
 
 import scala.language.experimental.macros
 import scala.language.reflectiveCalls
@@ -19,13 +20,13 @@ object JsonMacro {
     c.Expr[O](bundle.parseJson[O])
   }
 
-  def toJson[O: c.WeakTypeTag]
+  def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]
     (c: Context): c.Expr[String] = {
     val c0: c.type = c
     val bundle = new {
       val c: c0.type = c0
     } with JsonMacroImpl
-    c.Expr[String](bundle.toJson[O])
+    c.Expr[String](bundle.toJson[C, O])
   }
 
   def setProduct[O: c.WeakTypeTag]
