@@ -3,7 +3,6 @@ package eu.inn.binders.json.internal
 import java.io.ByteArrayOutputStream
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonGenerator}
-import eu.inn.binders.naming.Converter
 
 import scala.language.experimental.macros
 import scala.language.reflectiveCalls

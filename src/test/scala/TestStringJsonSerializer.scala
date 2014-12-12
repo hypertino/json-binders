@@ -16,6 +16,13 @@ class TestStringJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"stringVal":"abc"}""")
   }
 
+  "Json " should " deserialize class with String" in {
+    val o = """{"stringVal":"abc"}""".parseJson[TestString]
+    val t = TestString("abc")
+    val str = t.toJson
+    assert (t === 0)
+  }
+
   "Json " should " serialize class with array of String" in {
     val t = TestStringArray(List("a","b"))
     val str = t.toJson
