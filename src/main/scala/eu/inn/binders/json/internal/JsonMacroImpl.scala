@@ -1,5 +1,7 @@
 package eu.inn.binders.json.internal
 
+import eu.inn.binders.json.JsonSerializer
+
 import scala.language.experimental.macros
 import scala.language.reflectiveCalls
 import scala.reflect.macros.Context
@@ -15,15 +17,45 @@ trait JsonMacroImpl {
 
   def toJson[O: c.WeakTypeTag]: c.Tree = {
 
-    val jsonMacroTerm = JsonMacro.getClass.
+    val thisTerm = newTermName(c.fresh("$this"))
+    val objTerm = newTermName("$obj")
+    val jsonGeneratorTerm = newTermName(c.fresh("$jg"))
+    val jsonSerializerTerm = newTermName(c.fresh("$js"))
 
-    Apply(Select(Ident(jsonMacroTerm), newTermName("apply")), List())
+    val vals = List(
+      ValDef(Modifiers(), thisTerm, TypeTree(), c.prefix.tree),
+      ValDef(Modifiers(), objTerm, TypeTree(), Select(Ident(thisTerm), newTermName("obj")))
+    )
 
-    /*
-    *
-    * */
+    val serializeBlock =
+      Block(
+        // val js = JsonSerializer.apply(jg)
+        ValDef(Modifiers(), jsonSerializerTerm, TypeTree(),
+          Apply(
+            Select(Ident(typeOf[JsonSerializer.type].termSymbol), newTermName("apply")),
+            List(Ident(jsonGeneratorTerm))
+          )
+        ),
+        // js.bind[O](this.obj)
+        Apply(
+          TypeApply(
+            Select(Ident(jsonSerializerTerm), newTermName("bind")),
+            List(Ident(weakTypeOf[O].typeSymbol))
+          ),
+          List(Ident(objTerm))
+        )
+      )
 
-    Literal(Constant("a"))
+    val genCodeFunc = Function(
+      List(ValDef(Modifiers(Flag.PARAM), jsonGeneratorTerm, TypeTree(), EmptyTree)),
+      serializeBlock
+    )
+
+    val block = Block(vals,
+      Apply(Select(Ident(typeOf[JsonMacro.type].termSymbol), newTermName("wrapObjectGen")), List(genCodeFunc))
+    )
+    println(block)
+    block
   }
 
   protected def writeNull[O: c.WeakTypeTag](name: c.Tree, value: c.Tree, nonNullBlock: c.Tree): c.Tree = {

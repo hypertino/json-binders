@@ -8,7 +8,7 @@ package object json {
     def parseJson[O]: O = macro JsonMacro.parseJson[O]
   }
 
-  implicit class JsonGeneratorProduct[C, O <: Product](obj: O) {
+  implicit class JsonGeneratorProduct[C, O <: Product](val obj: O) {
     def toJson: String = macro JsonMacro.toJson[O]
   }
 }

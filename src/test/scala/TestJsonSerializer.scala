@@ -20,6 +20,7 @@ class TestJsonSerializer extends FlatSpec with Matchers {
   import eu.inn.binders.json._
 
   "Json " should " serialize class with Int" in {
+    implicit val defaultConverter = new PlainConverter
     val t = TestInt(1234)
     val str = t.toJson
     assert (str === """{"intVal":1234}""")

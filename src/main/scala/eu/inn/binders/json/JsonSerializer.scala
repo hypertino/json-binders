@@ -48,6 +48,6 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
 }
 
 object JsonSerializer {
-  implicit val defaultConverter = new PlainConverter with Converter
+  implicit val defaultConverter = new PlainConverter
   def apply[C <: Converter](jsonGenerator: JsonGenerator)(implicit c: Converter) = new JsonSerializer[C](jsonGenerator)
 }
