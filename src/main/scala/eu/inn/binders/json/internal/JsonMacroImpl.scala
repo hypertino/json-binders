@@ -1,6 +1,6 @@
 package eu.inn.binders.json.internal
 
-import eu.inn.binders.json.JsonSerializer
+import eu.inn.binders.json.{JsonDeserializer, JsonSerializer}
 import eu.inn.binders.naming.Converter
 
 import scala.language.experimental.macros
@@ -12,12 +12,52 @@ trait JsonMacroImpl {
 
   import c.universe._
 
-  def parseJson[O: c.WeakTypeTag]: c.Tree = {
-    Block()
+  def parseJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
+    val thisTerm = newTermName(c.fresh("$this"))
+    val strTerm = newTermName("$str")
+    val jsonParserTerm = newTermName(c.fresh("$jp"))
+    val jsonDeserializerTerm = newTermName(c.fresh("$jds"))
+
+    val vals = List(
+      ValDef(Modifiers(), thisTerm, TypeTree(), c.prefix.tree),
+      ValDef(Modifiers(), strTerm, TypeTree(), Select(Ident(thisTerm), newTermName("jsonString")))
+    )
+
+    val deserializeBlock = Block(
+      // val jds = JsonDeserializer.apply[C](jp)
+      ValDef(Modifiers(), jsonDeserializerTerm, TypeTree(),
+        Apply(
+          TypeApply(
+            Select(Ident(typeOf[JsonDeserializer.type].termSymbol), newTermName("apply")),
+            List(Ident(weakTypeOf[C].typeSymbol))
+          ),
+          List(Ident(jsonParserTerm))
+        )
+      ),
+      // jds.unbind[O]
+      TypeApply(
+        Select(Ident(jsonDeserializerTerm), newTermName("unbind")),
+        List(Ident(weakTypeOf[O].typeSymbol))
+      )
+    )
+
+    val parseCodeFunc = Function(
+      List(ValDef(Modifiers(Flag.PARAM), jsonParserTerm, TypeTree(), EmptyTree)),
+      deserializeBlock
+    )
+
+    val block = Block(vals,
+      Apply(
+        TypeApply(Select(Ident(typeOf[JsonMacro.type].termSymbol), newTermName("wrapParser")),List(Ident(weakTypeOf[O].typeSymbol))),
+        List(Ident(strTerm), parseCodeFunc)
+      )
+    )
+
+    println(block)
+    block
   }
 
   def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
-
     val thisTerm = newTermName(c.fresh("$this"))
     val objTerm = newTermName("$obj")
     val jsonGeneratorTerm = newTermName(c.fresh("$jg"))

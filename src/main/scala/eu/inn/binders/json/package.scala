@@ -6,8 +6,9 @@ import scala.language.experimental.macros
 import scala.reflect.runtime.universe._
 
 package object json {
-  implicit class JsonStringParser(srt: String) {
-    def parseJson[O]: O = macro JsonMacro.parseJson[O]
+  implicit class JsonStringParser(val jsonString: String) {
+    def parseJson[O]: O = macro JsonMacro.parseJson[PlainConverter, O]
+    def parseJsonWith[C <: Converter,O]: O = macro JsonMacro.parseJson[C,O]
   }
 
   implicit class JsonGeneratorProduct[O <: Product](val obj: O) {

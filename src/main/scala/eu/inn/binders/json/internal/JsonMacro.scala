@@ -2,7 +2,7 @@ package eu.inn.binders.json.internal
 
 import java.io.ByteArrayOutputStream
 
-import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonGenerator}
+import com.fasterxml.jackson.core.{JsonParser, JsonEncoding, JsonFactory, JsonGenerator}
 
 import scala.language.experimental.macros
 import scala.language.reflectiveCalls
@@ -10,13 +10,13 @@ import scala.reflect.macros.Context
 
 object JsonMacro {
 
-  def parseJson[O: c.WeakTypeTag]
+  def parseJson[C : c.WeakTypeTag, O: c.WeakTypeTag]
     (c: Context): c.Expr[O] = {
     val c0: c.type = c
     val bundle = new {
       val c: c0.type = c0
     } with JsonMacroImpl
-    c.Expr[O](bundle.parseJson[O])
+    c.Expr[O](bundle.parseJson[C, O])
   }
 
   def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]
@@ -56,6 +56,16 @@ object JsonMacro {
       val c: c0.type = c0
     } with JsonMacroImpl
     c.Expr[Any](bundle.setSequence[O](name.tree, value.tree))
+  }
+
+  def wrapParser[T](jsonString: String, codeBlock: JsonParser ⇒ T): T = {
+    val jf = new JsonFactory()
+    val jp = jf.createParser(jsonString)
+    try {
+      codeBlock(jp)
+    } finally {
+      jp.close()
+    }
   }
 
   def wrapGenerator(codeBlock: JsonGenerator ⇒ Unit): String = {

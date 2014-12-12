@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import eu.inn.binders.core.Deserializer
 import eu.inn.binders.naming.Converter
+import scala.reflect.runtime.universe._
 
 class JsonException(message: String) extends RuntimeException(message)
 
@@ -13,7 +14,7 @@ class JsonDeserializer[C <: Converter] protected (jsonNode: JsonNode) extends De
 
   override def hasField(fieldName: String): Boolean = jsonNode.isObject && jsonNode.has(fieldName)
 
-  override def iterator(): Iterator[Deserializer[C]] = {
+  def iterator(): Iterator[JsonDeserializer[C]] = {
     import scala.collection.JavaConversions._
 
     if (jsonNode.isArray)
@@ -50,4 +51,6 @@ object JsonDeserializer {
     val mapper = new ObjectMapper()
     mapper.readTree(jsonParser)
   }
+
+  def apply[C <: Converter : TypeTag](jsonParser: JsonParser) = new JsonDeserializer[C](jsonParser)
 }

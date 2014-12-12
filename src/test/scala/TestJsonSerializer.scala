@@ -19,20 +19,6 @@ case class TestFloat(floatVal: Float)
 
 class TestJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
-
-
-  "Json " should " serialize class with String" in {
-    val t = TestStr("abcd")
-    val str = t.toJson
-    assert (str === """{"strVal":"abcd"}""")
-  }
-
-  "Json " should " serialize class with Double" in {
-    val t = TestDouble(2.5)
-    val str = t.toJson
-    assert (str === """{"doubleVal":2.5}""")
-  }
 
   /*"Test " should " should be able to deserialize" in {
 
