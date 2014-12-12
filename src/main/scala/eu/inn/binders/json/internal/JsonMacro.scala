@@ -39,6 +39,16 @@ object JsonMacro {
     c.Expr[Any](bundle.setProduct[O](name.tree, value.tree))
   }
 
+  def addProduct[O: c.WeakTypeTag]
+  (c: Context)
+    (value: c.Expr[O]): c.Expr[Any] = {
+    val c0: c.type = c
+    val bundle = new {
+      val c: c0.type = c0
+    } with JsonMacroImpl
+    c.Expr[Any](bundle.addProduct[O](value.tree))
+  }
+
   def setSequence[O: c.WeakTypeTag]
     (c: Context)
     (name: c.Expr[String], value: c.Expr[O]): c.Expr[Any] = {

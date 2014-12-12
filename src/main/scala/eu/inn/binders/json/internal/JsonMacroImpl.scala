@@ -70,10 +70,13 @@ trait JsonMacroImpl {
       value
   }
 
+  protected def applySome[T <: Tree](t: T) = Apply(Select(Ident(weakTypeOf[Some.type].termSymbol), "apply"),
+    List(t))
+
   def setProduct[O: c.WeakTypeTag](name: c.Tree, value: c.Tree): c.Tree = {
     val nonNullBlock = Block(
       List(
-        Apply(Select(c.prefix.tree, newTermName("beginObject")),List(name)),
+        Apply(Select(c.prefix.tree, newTermName("beginObject")),List(applySome(name))),
         Apply(Select(c.prefix.tree, newTermName("bind")), List(optionGetter[O](value)))
       ),
       Apply(Select(c.prefix.tree, newTermName("endObject")),List())
@@ -92,11 +95,33 @@ trait JsonMacroImpl {
     block
   }
 
+  def addProduct[O: c.WeakTypeTag](value: c.Tree): c.Tree = {
+    val nonNullBlock = Block(
+      List(
+        Apply(Select(c.prefix.tree, newTermName("beginObject")),List()),
+        Apply(Select(c.prefix.tree, newTermName("bind")), List(optionGetter[O](value)))
+      ),
+      Apply(Select(c.prefix.tree, newTermName("endObject")),List())
+    )
+
+    val block = if (weakTypeTag[O].tpe <:< typeOf[Option[_]]) {
+      If(
+        Select(value, newTermName("isDefined")),
+        nonNullBlock,
+        Apply(Select(c.prefix.tree, newTermName("addNull")),List())
+      )
+    }
+    else
+      nonNullBlock
+    // println(block)
+    block
+  }
+
   def setSequence[O: c.WeakTypeTag](name: c.Tree, value: c.Tree): c.Tree = {
     val elemTerm = newTermName(c.fresh("$elem"))
     val block = Block(
       List(
-        Apply(Select(c.prefix.tree, newTermName("beginArray")),List(name)),
+        Apply(Select(c.prefix.tree, newTermName("beginArray")),List(applySome(name))),
         Apply(Select(value, newTermName("map")), List(
           Function( // element ⇒
             List(ValDef(Modifiers(Flag.PARAM), elemTerm, TypeTree(), EmptyTree)),
