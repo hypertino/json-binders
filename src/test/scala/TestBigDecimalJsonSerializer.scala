@@ -11,7 +11,11 @@ class TestBigDecimalJsonSerializer extends FlatSpec with Matchers {
   import eu.inn.binders.json._
 
   "Json " should " serialize class with BigDecimal" in {
-    val t = TestBigDecimal(BigDecimal("123411111111111111119999999999999999999999999999898989898989899898989898988.454546"))
+    val t = TestBigDecimal(
+      BigDecimal("123411111111111111119999999999999999999999999999898989898989899898989898988.454546",
+        new java.math.MathContext(120)
+      )
+    )
     val str = t.toJson
     assert (str === """{"bigdecimalVal":123411111111111111119999999999999999999999999999898989898989899898989898988.454546}""")
   }
