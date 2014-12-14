@@ -16,16 +16,34 @@ class TestBooleanJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"booleanVal":true}""")
   }
 
+  "Json " should " deserialize class with Boolean" in {
+    val o = """{"booleanVal":true}""".parseJson[TestBoolean]
+    val t = TestBoolean(booleanVal = true)
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Boolean" in {
     val t = TestBooleanArray(List(true,false,true))
     val str = t.toJson
     assert (str === """{"booleanArray":[true,false,true]}""")
   }
 
+  "Json " should " deserialize class with array of Boolean" in {
+    val o = """{"booleanArray":[true,false,true]}""".parseJson[TestBooleanArray]
+    val t = TestBooleanArray(List(true,false,true))
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Option[Boolean]" in {
     val t = TestBooleanArrayN(List(Some(true),None,Some(false)))
     val str = t.toJson
     assert (str === """{"booleanArrayN":[true,null,false]}""")
+  }
+
+  "Json " should " deserialize class with array of Option[Boolean]" in {
+    val o = """{"booleanArrayN":[true,null,false]}""".parseJson[TestBooleanArrayN]
+    val t = TestBooleanArrayN(List(Some(true),None,Some(false)))
+    assert (o === t)
   }
 
   "Json " should " serialize class with Nullable Boolean" in {

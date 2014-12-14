@@ -15,16 +15,34 @@ class TestFloatJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"floatVal":1234.567}""")
   }
 
+  "Json " should " deserialize class with Float" in {
+    val o = """{"floatVal":1234.567}""".parseJson[TestFloat]
+    val t = TestFloat(1234.567f)
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Float" in {
     val t = TestFloatArray(List(1.5f,2,3))
     val str = t.toJson
     assert (str === """{"floatArray":[1.5,2.0,3.0]}""")
   }
 
+  "Json " should " deserialize class with array of Float" in {
+    val o = """{"floatArray":[1.5,2.0,3.0]}""".parseJson[TestFloatArray]
+    val t = TestFloatArray(List(1.5f,2,3))
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Option[Float]" in {
     val t = TestFloatArrayN(List(Some(1.5f),None,Some(3)))
     val str = t.toJson
     assert (str === """{"floatArrayN":[1.5,null,3.0]}""")
+  }
+
+  "Json " should " deserialize class with array of Option[Float]" in {
+    val o = """{"floatArrayN":[1.5,null,3.0]}""".parseJson[TestFloatArrayN]
+    val t = TestFloatArrayN(List(Some(1.5f),None,Some(3)))
+    assert (o === t)
   }
 
   "Json " should " serialize class with Nullable Float" in {

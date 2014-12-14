@@ -16,16 +16,34 @@ class TestLongJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"longVal":1234}""")
   }
 
+  "Json " should " deserialize class with Long" in {
+    val o = """{"longVal":1234}""".parseJson[TestLong]
+    val t = TestLong(1234)
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Long" in {
     val t = TestLongArray(List(1,2,3))
     val str = t.toJson
     assert (str === """{"longArray":[1,2,3]}""")
   }
 
+  "Json " should " deserialize class with array of Long" in {
+    val o = """{"longArray":[1,2,3]}""".parseJson[TestLongArray]
+    val t = TestLongArray(List(1,2,3))
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Option[Long]" in {
     val t = TestLongArrayN(List(Some(1),None,Some(3)))
     val str = t.toJson
     assert (str === """{"longArrayN":[1,null,3]}""")
+  }
+
+  "Json " should " deserialize class with array of Option[Long]" in {
+    val o = """{"longArrayN":[1,null,3]}""".parseJson[TestLongArrayN]
+    val t = TestLongArrayN(List(Some(1),None,Some(3)))
+    assert (o === t)
   }
 
   "Json " should " serialize class with Nullable Long" in {

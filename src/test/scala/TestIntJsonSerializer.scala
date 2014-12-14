@@ -16,16 +16,34 @@ class TestIntJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"intVal":1234}""")
   }
 
+  "Json " should " deserialize class with Int" in {
+    val o = """{"intVal":1234}""".parseJson[TestInt]
+    val t = TestInt(1234)
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Int" in {
     val t = TestIntArray(List(1,2,3))
     val str = t.toJson
     assert (str === """{"intArray":[1,2,3]}""")
   }
 
+  "Json " should " deserialize class with array of Int" in {
+    val o = """{"intArray":[1,2,3]}""".parseJson[TestIntArray]
+    val t = TestIntArray(List(1,2,3))
+    assert (o === t)
+  }
+
   "Json " should " serialize class with array of Option[Int]" in {
     val t = TestIntArrayN(List(Some(1),None,Some(3)))
     val str = t.toJson
     assert (str === """{"intArrayN":[1,null,3]}""")
+  }
+
+  "Json " should " deserialize class with array of Option[Int]" in {
+    val o = """{"intArrayN":[1,null,3]}""".parseJson[TestIntArrayN]
+    val t = TestIntArrayN(List(Some(1),None,Some(3)))
+    assert (o === t)
   }
 
   "Json " should " serialize class with Nullable Int" in {

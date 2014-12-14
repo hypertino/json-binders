@@ -53,7 +53,7 @@ trait JsonMacroImpl {
       )
     )
 
-    println(block)
+    //println(s"parseJson(${weakTypeTag[C]}, ${weakTypeTag[O]}:\n$block)")
     block
   }
 

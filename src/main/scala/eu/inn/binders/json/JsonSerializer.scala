@@ -56,7 +56,7 @@ class JsonSerializer[C <: Converter : TypeTag](val jsonGenerator: JsonGenerator,
   def setProduct[T <: Product](name: String, value: T) = macro JsonMacro.setProduct[T]
   def addProduct[T <: Product](value: T) = macro JsonMacro.addProduct[T]
 
-  def setSequence[T](name: String, value: Seq[T]) = macro JsonMacro.setSequence[T]
+  def setTraversableOnce[T](name: String, value: TraversableOnce[T]) = macro JsonMacro.setSequence[T]
   // todo: def addSequence[T](value: Seq[T]) = macro JsonMacro.addSequence[T]
 
   def setNull(name: String): Unit = if (!skipNullFields) jsonGenerator.writeNullField(name)

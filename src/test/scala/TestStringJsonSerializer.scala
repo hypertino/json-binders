@@ -1,4 +1,5 @@
 
+import eu.inn.binders.core.FieldNotFoundException
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestString(stringVal: String)
@@ -15,13 +16,13 @@ class TestStringJsonSerializer extends FlatSpec with Matchers {
     val str = t.toJson
     assert (str === """{"stringVal":"abc"}""")
   }
-/*
+
   "Json " should " deserialize class with String" in {
     val o = """{"stringVal":"abc"}""".parseJson[TestString]
     val t = TestString("abc")
     assert (t === o)
   }
-*/
+
   "Json " should " serialize class with array of String" in {
     val t = TestStringArray(List("a","b"))
     val str = t.toJson
@@ -40,6 +41,12 @@ class TestStringJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"stringArrayN":["a",null,"c"]}""")
   }
 
+  "Json " should " deserialize class with array of Option[String]" in {
+    val o = """{"stringArrayN":["a",null,"b"]}""".parseJson[TestStringArrayN]
+    val t = TestStringArrayN(List(Some("a"),None,Some("b")))
+    assert (t === o)
+  }
+
   "Json " should " serialize class with Nullable String" in {
     val t = TestStringN(Some("a"), Some("b"))
     val str = t.toJson
@@ -48,5 +55,24 @@ class TestStringJsonSerializer extends FlatSpec with Matchers {
     val t2 = TestStringN(Some("a"),None)
     val str2 = t2.toJson
     assert (str2 === """{"stringValN1":"a"}""")
+  }
+
+  "Json " should " deserialize class with Nullable String" in {
+    val o = """{"stringValN1":"a","stringValN2":"b"}""".parseJson[TestStringN]
+    val t = TestStringN(Some("a"), Some("b"))
+    assert (o === t)
+
+    val o2 = """{"stringValN1":"a"}""".parseJson[TestStringN]
+    val t2 = TestStringN(Some("a"),None)
+    assert (o2 === t2)
+  }
+
+  "Json " should " throw exception if fieldname doesn't match" in {
+    intercept[FieldNotFoundException] {
+      """{"wrongFieldName":"abc"}""".parseJson[TestString]
+    }
+    intercept[FieldNotFoundException] {
+      """{"wrongFieldName":"abc"}""".parseJson[TestStringArray]
+    }
   }
 }
