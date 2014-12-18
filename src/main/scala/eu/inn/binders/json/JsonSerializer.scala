@@ -56,6 +56,9 @@ class JsonSerializer[C <: Converter : TypeTag](val jsonGenerator: JsonGenerator,
   def setProduct[T <: Product](name: String, value: T) = macro JsonMacro.setProduct[T]
   def addProduct[T <: Product](value: T) = macro JsonMacro.addProduct[T]
 
+  def setMap[T](name: String, value: Map[String, T]) = macro JsonMacro.setMap[T]
+  // todo: def addMap[T](value: Map[String, T]) = macro JsonMacro.addMap[T]
+
   def setTraversableOnce[T](name: String, value: TraversableOnce[T]) = macro JsonMacro.setSequence[T]
   // todo: def addSequence[T](value: Seq[T]) = macro JsonMacro.addSequence[T]
 
@@ -95,6 +98,8 @@ class JsonSerializer[C <: Converter : TypeTag](val jsonGenerator: JsonGenerator,
   def endObject() = {
     jsonGenerator.writeEndObject()
   }
+
+  def writeObjectField(name: String) = jsonGenerator.writeFieldName(name)
 
   def beginArray(name: Option[String] = None) = {
     name.map {

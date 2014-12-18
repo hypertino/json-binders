@@ -175,4 +175,90 @@ trait JsonMacroImpl {
     // println(block)
     block
   }
+
+  def setMap[O: c.WeakTypeTag](name: c.Tree, value: c.Tree): c.Tree = {
+    val elemTerm = newTermName(c.fresh("$elem"))
+    val block = Block(
+      List(
+        Apply(Select(c.prefix.tree, newTermName("beginObject")),List(applySome(name))),
+        Apply(Select(value, newTermName("map")), List(
+          Function( // element ⇒
+            List(ValDef(Modifiers(Flag.PARAM), elemTerm, TypeTree(), EmptyTree)),
+            Block(
+              Apply(
+                Select(c.prefix.tree, newTermName("writeObjectField")),
+                List(Select(Ident(elemTerm), newTermName("_1")))
+              ),
+              Apply(
+                Select(c.prefix.tree, newTermName("bindArgs")),
+                List(
+                  Select(Ident(elemTerm), newTermName("_2"))
+                )
+              )
+            )
+          )
+        ))
+        //
+      ),
+      Apply(Select(c.prefix.tree, newTermName("endObject")),List())
+    )
+    //println(block)
+    block
+  }
+
+  def getMap[O: c.WeakTypeTag](name: c.Tree): c.Tree = {
+    val thisTerm = newTermName(c.fresh("$this"))
+    val vals = List(
+      ValDef(Modifiers(), thisTerm, TypeTree(), c.prefix.tree)
+    )
+    val block = Block(
+      vals,
+      TypeApply(
+        Select(
+          Select(
+            Apply(
+              Select(Ident(thisTerm), newTermName("getFieldOptionDeserializer")),
+              List(name)
+            ),
+            newTermName("get")
+          ),
+          newTermName("getAsMap")
+        ),
+        List(Ident(weakTypeOf[O].typeSymbol))
+      )
+    )
+    //println(block)
+    block
+  }
+
+  def getAsMap[O: c.WeakTypeTag]: c.Tree = {
+    val thisTerm = newTermName(c.fresh("$this"))
+    val elemTerm = newTermName(c.fresh("$elem"))
+    val vals = List(
+      ValDef(Modifiers(), thisTerm, TypeTree(), c.prefix.tree)
+    )
+    val block = Block(
+      vals,
+      Select(
+        Apply(
+          Select(Apply(Select(Ident(thisTerm), newTermName("fieldsIterator")), List()), newTermName("map")),
+          List(
+            Function(// elem ⇒
+              List(ValDef(Modifiers(Flag.PARAM), elemTerm, TypeTree(), EmptyTree)),
+              Apply(Select(Ident(typeOf[scala.Tuple2.type].termSymbol), newTermName("apply")), List(
+                Select(Ident(elemTerm), newTermName("_1")),
+                TypeApply(
+                  Select(Select(Ident(elemTerm), newTermName("_2")), newTermName("unbind")),
+                  List(Ident(weakTypeOf[O].typeSymbol))
+                )
+              ))
+            )
+          )
+        ),
+        newTermName("toMap")
+      )
+    )
+    //println(block)
+    block
+  }
 }

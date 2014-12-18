@@ -5,9 +5,10 @@ import java.util.Date
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import eu.inn.binders.core.{FieldNotFoundException, Deserializer}
-import eu.inn.binders.json.internal.ISO8601
+import eu.inn.binders.json.internal.{JsonMacro, ISO8601}
 import eu.inn.binders.naming.Converter
 import scala.reflect.runtime.universe._
+import scala.language.experimental.macros
 
 class JsonDeserializeException(message: String) extends RuntimeException(message)
 
@@ -24,6 +25,18 @@ class JsonDeserializer[C <: Converter] protected (jsonNode: JsonNode, fieldName:
       jsonNode.iterator().map { e => new JsonDeserializer[C](e, fieldName + "[]")}
     else
       throw new JsonDeserializeException("Couldn't iterate nonarray field")
+  }
+
+  def fieldsIterator(): Iterator[(String, JsonDeserializer[C])] = {
+    import scala.collection.JavaConversions._
+
+    if (jsonNode.isObject)
+      jsonNode.fields().map {  e =>
+        println("iterating: " + e)
+        (e.getKey, new JsonDeserializer[C](e.getValue, e.getKey))
+      }
+    else
+      throw new JsonDeserializeException("Couldn't iterate nonobject fields")
   }
 
   def getString(name: String): String = getObjectField(name).asText()
@@ -57,8 +70,12 @@ class JsonDeserializer[C <: Converter] protected (jsonNode: JsonNode, fieldName:
   def getDate(name: String): Date = ISO8601.fromString(getObjectField(name).asText())
   def getAsDate: Date = ISO8601.fromString(jsonNode.asText())
   def getAsDateOption: Option[Date] = getNullable(ISO8601.fromString(jsonNode.asText()))
-  
+
   // def getFieldDeserializer(name: String): JsonDeserializer[C] = new JsonDeserializer[C](jsonNode.get(name), name)
+
+  def getMap[T](name: String): Map[String, T] = macro JsonMacro.getMap[T]
+  def getAsMap[T]: Map[String, T] = macro JsonMacro.getAsMap[T]
+  // def getAsMap[T]: Map[String, T] = macro JsonMacro.getMap[T]
 
   def getFieldOptionDeserializer(name: String): Option[JsonDeserializer[C]] =
     if (jsonNode.hasNonNull(name))

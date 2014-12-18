@@ -58,6 +58,35 @@ object JsonMacro {
     c.Expr[Any](bundle.setSequence[O](name.tree, value.tree))
   }
 
+  def setMap[O: c.WeakTypeTag]
+  (c: Context)
+  (name: c.Expr[String], value: c.Expr[Map[String,O]]): c.Expr[Any] = {
+    val c0: c.type = c
+    val bundle = new {
+      val c: c0.type = c0
+    } with JsonMacroImpl
+    c.Expr[Any](bundle.setMap[O](name.tree, value.tree))
+  }
+
+  def getMap[O: c.WeakTypeTag]
+  (c: Context)
+  (name: c.Expr[String]): c.Expr[Map[String,O]] = {
+    val c0: c.type = c
+    val bundle = new {
+      val c: c0.type = c0
+    } with JsonMacroImpl
+    c.Expr[Map[String,O]](bundle.getMap[O](name.tree))
+  }
+
+  def getAsMap[O: c.WeakTypeTag]
+  (c: Context): c.Expr[Map[String,O]] = {
+    val c0: c.type = c
+    val bundle = new {
+      val c: c0.type = c0
+    } with JsonMacroImpl
+    c.Expr[Map[String,O]](bundle.getAsMap[O])
+  }
+
   def wrapParser[T](jsonString: String, codeBlock: JsonParser ⇒ T): T = {
     val jf = new JsonFactory()
     val jp = jf.createParser(jsonString)
