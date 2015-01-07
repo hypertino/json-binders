@@ -54,7 +54,7 @@ class TestStringJsonSerializer extends FlatSpec with Matchers {
 
     val t2 = TestStringN(Some("a"),None)
     val str2 = t2.toJson
-    assert (str2 === """{"stringValN1":"a"}""")
+    assert (str2 === """{"stringValN1":"a","stringValN2":null}""")
   }
 
   "Json " should " deserialize class with Nullable String" in {

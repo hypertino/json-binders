@@ -19,11 +19,11 @@ class TestDateJsonSerializer extends FlatSpec with Matchers with BeforeAndAfter 
   "Json " should " serialize class with Date" in {
     val t = TestDate(new Date(1418402444000l))
     val str = t.toJson
-    assert (str === """{"dateVal":"2014-12-12T16:40:44+00:00"}""")
+    assert (str === """{"dateVal":1418402444000}""")
   }
 
   "Json " should " deserialize class with Date" in {
-    val o = """{"dateVal":"2014-12-12T16:40:44+00:00"}""".parseJson[TestDate]
+    val o = """{"dateVal":1418402444000}""".parseJson[TestDate]
     val t = TestDate(new Date(1418402444000l))
     assert (o === t)
   }
@@ -31,11 +31,11 @@ class TestDateJsonSerializer extends FlatSpec with Matchers with BeforeAndAfter 
   "Json " should " serialize class with array of Date" in {
     val t = TestDateArray(List(new Date(1418402444000l),new Date(1418402445000l)))
     val str = t.toJson
-    assert (str === """{"dateArray":["2014-12-12T16:40:44+00:00","2014-12-12T16:40:45+00:00"]}""")
+    assert (str === """{"dateArray":[1418402444000,1418402445000]}""")
   }
 
   "Json " should " deserialize class with array of Date" in {
-    val o = """{"dateArray":["2014-12-12T16:40:44+00:00","2014-12-12T16:40:45+00:00"]}""".parseJson[TestDateArray]
+    val o = """{"dateArray":[1418402444000,1418402445000]}""".parseJson[TestDateArray]
     val t = TestDateArray(List(new Date(1418402444000l),new Date(1418402445000l)))
     assert (o === t)
   }
@@ -43,11 +43,11 @@ class TestDateJsonSerializer extends FlatSpec with Matchers with BeforeAndAfter 
   "Json " should " serialize class with array of Option[Date]" in {
     val t = TestDateArrayN(List(Some(new Date(1418402444000l)),None,Some(new Date(1418402445000l))))
     val str = t.toJson
-    assert (str === """{"dateArrayN":["2014-12-12T16:40:44+00:00",null,"2014-12-12T16:40:45+00:00"]}""")
+    assert (str === """{"dateArrayN":[1418402444000,null,1418402445000]}""")
   }
 
   "Json " should " deserialize class with array of Option[Date]" in {
-    val o = """{"dateArrayN":["2014-12-12T16:40:44+00:00",null,"2014-12-12T16:40:45+00:00"]}""".parseJson[TestDateArrayN]
+    val o = """{"dateArrayN":[1418402444000,null,1418402445000]}""".parseJson[TestDateArrayN]
     val t = TestDateArrayN(List(Some(new Date(1418402444000l)),None,Some(new Date(1418402445000l))))
     assert (o === t)
   }
@@ -55,10 +55,10 @@ class TestDateJsonSerializer extends FlatSpec with Matchers with BeforeAndAfter 
   "Json " should " serialize class with Nullable Date" in {
     val t = TestDateN(Some(new Date(1418402444000l)),Some(new Date(1418402445000l)))
     val str = t.toJson
-    assert (str === """{"dateValN1":"2014-12-12T16:40:44+00:00","dateValN2":"2014-12-12T16:40:45+00:00"}""")
+    assert (str === """{"dateValN1":1418402444000,"dateValN2":1418402445000}""")
 
     val t2 = TestDateN(Some(new Date(1418402444000l)),None)
     val str2 = t2.toJson
-    assert (str2 === """{"dateValN1":"2014-12-12T16:40:44+00:00"}""")
+    assert (str2 === """{"dateValN1":1418402444000,"dateValN2":null}""")
   }
 }

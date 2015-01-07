@@ -53,6 +53,6 @@ class TestBooleanJsonSerializer extends FlatSpec with Matchers {
 
     val t2 = TestBooleanN(Some(true),None)
     val str2 = t2.toJson
-    assert (str2 === """{"booleanValN1":true}""")
+    assert (str2 === """{"booleanValN1":true,"booleanValN2":null}""")
   }
 }

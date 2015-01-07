@@ -6,7 +6,6 @@ case class TestStringMap1(map: Map[String, String])
 case class TestStringMap2(map: Map[String, TestInt])
 
 class TestMapSerializer extends FlatSpec with Matchers {
-
    import eu.inn.binders.json._
 
    "Json " should " serialize map[String,String]" in {
@@ -32,4 +31,4 @@ class TestMapSerializer extends FlatSpec with Matchers {
     val t = TestStringMap2(Map("a" -> TestInt(1), "b" ->TestInt(2)))
     assert (o === t)
   }
- }
+}

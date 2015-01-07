@@ -28,6 +28,27 @@ object JsonMacro {
     c.Expr[String](bundle.toJson[C, O])
   }
 
+  def writeMap[S: c.WeakTypeTag, O: c.WeakTypeTag]
+  (c: Context)
+  (value: c.Expr[Map[String, O]]): c.Expr[Any] = {
+
+    val c0: c.type = c
+    val bundle = new {
+      val c: c0.type = c0
+    } with JsonMacroImpl
+    c.Expr[Any](bundle.writeMap[S,O](value.tree))
+  }
+
+  def readMap[S: c.WeakTypeTag, O: c.WeakTypeTag]
+  (c: Context)(): c.Expr[Map[String, O]] = {
+    val c0: c.type = c
+    val bundle = new {
+      val c: c0.type = c0
+    } with JsonMacroImpl
+    c.Expr[Map[String, O]](bundle.readMap[S,O])
+  }
+
+/*
   def setProduct[O: c.WeakTypeTag]
     (c: Context)
     (name: c.Expr[String], value: c.Expr[O]): c.Expr[Any] = {
@@ -85,7 +106,7 @@ object JsonMacro {
       val c: c0.type = c0
     } with JsonMacroImpl
     c.Expr[Map[String,O]](bundle.getAsMap[O])
-  }
+  }*/
 
   def wrapParser[T](jsonString: String, codeBlock: JsonParser ⇒ T): T = {
     val jf = new JsonFactory()
@@ -114,7 +135,7 @@ object JsonMacro {
     }
     ba.toString("UTF-8")
   }
-
+/*
   def wrapObjectGen(codeBlock: JsonGenerator ⇒ Unit): String = {
     wrapGenerator(jsonGenerator ⇒ {
       jsonGenerator.writeStartObject()
@@ -129,5 +150,5 @@ object JsonMacro {
       codeBlock(jsonGenerator)
       jsonGenerator.writeEndArray()
     })
-  }
+  }*/
 }
