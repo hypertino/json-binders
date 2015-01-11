@@ -32,38 +32,16 @@ class JsonDeserializer[C <: Converter] protected (jsonNode: JsonNode, val fieldN
       throw new JsonDeserializeException("Couldn't iterate nonarray/nonobject field")
   }
 
+  def isNull: Boolean = jsonNode.isNull()
   def readString(): String = jsonNode.asText()
-  def readStringOption(): Option[String] = getNullable(readString())
-
   def readInt(): Int = jsonNode.asInt()
-  def readIntOption() = getNullable(readInt())
-
   def readLong(): Long = jsonNode.asLong()
-  def readLongOption() = getNullable(readLong())
-
   def readFloat(): Float = jsonNode.asDouble().toFloat
-  def readFloatOption() = getNullable(readFloat())
-
   def readDouble(): Double = jsonNode.asDouble()
-  def readDoubleOption() = getNullable(readDouble())
-
   def readBoolean(): Boolean = jsonNode.asBoolean()
-  def readBooleanOption() = getNullable(readBoolean())
-
   def readBigDecimal(): BigDecimal = JsonDeserializer.stringToBigDecimal(jsonNode.asText())
-  def readBigDecimalOption() = getNullable(readBigDecimal())
-
   def readDate(): Date = new Date(jsonNode.asLong())
-  def readDateOption(): Option[Date] = getNullable(readDate())
-
   def readMap[T](): Map[String,T] = macro JsonMacro.readMap[JsonDeserializer[C], T]
-
-  protected def getNullable[T](f: => T):Option[T] = {
-    if (jsonNode.isNull)
-      None
-    else
-      Some(f)
-  }
 }
 
 object JsonDeserializer {

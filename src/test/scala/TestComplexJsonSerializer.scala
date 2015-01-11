@@ -12,7 +12,7 @@ case class TestComplex(
   )
 
 class TestComplexJsonSerializer extends FlatSpec with Matchers {
-/* todo:
+
   import eu.inn.binders.json._
 
   "Json " should " serialize complex class" in {
@@ -28,16 +28,16 @@ class TestComplexJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"intVal":123,"intValN":456,"seq":[{"intVal":1},{"intVal":2}],"seqString":["a","b"],"inner1":{"floatVal":1.3},"inner2N":{"doubleVal":0.5}}""")
   }
 
-  "Json " should " serialize complex class with empty fields" in {
+  "Json " should " deserialize complex class" in {
     val t = TestComplex(
       123,
-      None,
-      List(),
-      List(),
+      Some(456),
+      List(TestInt(1), TestInt(2)),
+      List("a","b"),
       TestFloat(1.3f),
-      None
+      Some(TestDouble(0.5))
     )
-    val str = t.toJson
-    assert (str === """{"intVal":123,"seq":[],"seqString":[],"inner1":{"floatVal":1.3}}""")
-  }*/
+    val d = """{"intVal":123,"intValN":456,"seq":[{"intVal":1},{"intVal":2}],"seqString":["a","b"],"inner1":{"floatVal":1.3},"inner2N":{"doubleVal":0.5}}""".parseJson[TestComplex]
+    assert (t === d)
+  }
 }
