@@ -10,13 +10,14 @@ trait JsonMacroImpl {
 
   def parseJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
-      import eu.inn.binders.json._
-      import com.fasterxml.jackson.core._
       val t = ${c.prefix.tree}
-      internal.JsonMacro.wrapParser(t.jsonString, (jp: JsonParser)=> {
-        val deserializer = JsonDeserializer[${weakTypeOf[C]}](jp)
-        deserializer.unbind[${weakTypeOf[O]}]
+      var o: Option[${weakTypeOf[O]}] = None
+      eu.inn.binders.json.internal.JsonMacro.withFactory(factory => {
+        factory.withParser[${weakTypeOf[O]}](t.jsonString, deserializer=> {
+          o = Some(deserializer.unbind[${weakTypeOf[O]}])
+        })
       })
+      o.get
     }"""
     //println(block)
     block
@@ -24,13 +25,14 @@ trait JsonMacroImpl {
 
   def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
-      import eu.inn.binders.json._
-      import com.fasterxml.jackson.core._
       val t = ${c.prefix.tree}
-      internal.JsonMacro.wrapGenerator((jp: JsonGenerator)=> {
-        val serializer = JsonSerializer[${weakTypeOf[C]}](jp)
-        serializer.bind[${weakTypeOf[O]}](t.obj)
+      var s: Option[String] = None
+      eu.inn.binders.json.internal.JsonMacro.withFactory(factory => {
+        factory.withGenerator(serializer=> {
+          s = Some(serializer.bind[${weakTypeOf[O]}](t.obj))
+        })
       })
+      s.get
     }"""
     println(block)
     block

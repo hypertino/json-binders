@@ -5,15 +5,16 @@ import java.util.Date
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
 import eu.inn.binders.json.internal.JsonMacro
-import eu.inn.binders.naming.{Converter, PlainConverter}
+import eu.inn.binders.naming.{Converter}
 import scala.language.experimental.macros
-import scala.reflect.runtime.universe._
 
-class JsonSerializer[C <: Converter : TypeTag](val jsonGenerator: JsonGenerator) extends Serializer[C]{
+class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends Serializer[C]{
   def getFieldSerializer(fieldName: String): Option[JsonSerializer[C]] = {
     jsonGenerator.writeFieldName(fieldName)
-    Some(new JsonSerializer[C](jsonGenerator))
+    Some(createFieldSerializer())
   }
+
+  protected def createFieldSerializer() = new JsonSerializer[C](jsonGenerator)
 
   def writeNull(): Unit = jsonGenerator.writeNull()
   def writeInteger(value: Int): Unit = jsonGenerator.writeNumber(value)
@@ -40,8 +41,4 @@ class JsonSerializer[C <: Converter : TypeTag](val jsonGenerator: JsonGenerator)
   def endArray(): Unit = {
     jsonGenerator.writeEndArray()
   }
-}
-
-object JsonSerializer {
-  def apply[C <: Converter : TypeTag](jsonGenerator: JsonGenerator) = new JsonSerializer[C](jsonGenerator)
 }

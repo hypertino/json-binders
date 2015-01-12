@@ -21,16 +21,18 @@ class JsonDeserializer[C <: Converter] protected (jsonNode: JsonNode, val fieldN
     import scala.collection.JavaConversions._
 
     if (jsonNode.isArray)
-      jsonNode.iterator().map { e => new JsonDeserializer[C](e, None)}
+      jsonNode.iterator().map { e => createFieldDeserializer(e, None)}
     else
     if (jsonNode.isObject)
       jsonNode.fields().map {  e =>
       //  println("iterating: " + e)
-        new JsonDeserializer[C](e.getValue, Some(e.getKey))
+        createFieldDeserializer(e.getValue, Some(e.getKey))
       }
     else
       throw new JsonDeserializeException("Couldn't iterate nonarray/nonobject field")
   }
+
+  protected def createFieldDeserializer(jsonNode: JsonNode, fieldName: Option[String]) = new JsonDeserializer[C](jsonNode, fieldName)
 
   def isNull: Boolean = jsonNode.isNull()
   def readString(): String = jsonNode.asText()
@@ -55,5 +57,5 @@ object JsonDeserializer {
     BigDecimal(s, new java.math.MathContext(precision))
   }
 
-  def apply[C <: Converter : TypeTag](jsonParser: JsonParser) = new JsonDeserializer[C](jsonParser)
+//  def apply[C <: Converter : TypeTag](jsonParser: JsonParser) = new JsonDeserializer[C](jsonParser)
 }
