@@ -14,8 +14,8 @@ trait JsonMacroImpl {
       import com.fasterxml.jackson.core._
       val t = ${c.prefix.tree}
       internal.JsonMacro.wrapParser(t.jsonString, (jp: JsonParser)=> {
-        val deserializer = JsonDeserializer[${weakTypeOf[C].typeSymbol}](jp)
-        deserializer.unbind[${weakTypeOf[O].typeSymbol}]
+        val deserializer = JsonDeserializer[${weakTypeOf[C]}](jp)
+        deserializer.unbind[${weakTypeOf[O]}]
       })
     }"""
     //println(block)
@@ -28,11 +28,11 @@ trait JsonMacroImpl {
       import com.fasterxml.jackson.core._
       val t = ${c.prefix.tree}
       internal.JsonMacro.wrapGenerator((jp: JsonGenerator)=> {
-        val serializer = JsonSerializer[${weakTypeOf[C].typeSymbol}](jp)
-        serializer.bind[${weakTypeOf[O].typeSymbol}](t.obj)
+        val serializer = JsonSerializer[${weakTypeOf[C]}](jp)
+        serializer.bind[${weakTypeOf[O]}](t.obj)
       })
     }"""
-    //println(block)
+    println(block)
     block
   }
 
@@ -54,7 +54,7 @@ trait JsonMacroImpl {
     val block = q"""{
       val deserializer = ${c.prefix.tree}
       deserializer.iterator().map{ el =>
-        (el.fieldName.get, el.unbind[${weakTypeOf[O].typeSymbol}])
+        (el.fieldName.get, el.unbind[${weakTypeOf[O]}])
       }.toMap
     }"""
     //println(block)
