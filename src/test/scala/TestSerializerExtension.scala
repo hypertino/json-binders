@@ -2,7 +2,7 @@
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
 import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
 import eu.inn.binders.json.{SerializerFactory, JsonSerializer, JsonDeserializer}
-import eu.inn.binders.naming.Converter
+import eu.inn.binders.naming.{PlainConverter, Converter}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ExtraDataType(val v: String)
@@ -20,9 +20,9 @@ class JsonDeserializerEx[C <: Converter]protected (jsonNode: JsonNode, override 
   def readExtraDataType() : ExtraDataType = new ExtraDataType(jsonNode.asText())
 }
 
-class SerializerFactoryEx extends SerializerFactory {
-  def createSerializer[C <: Converter](jsonGenerator: JsonGenerator): JsonSerializer[C] = new JsonSerializerEx[C](jsonGenerator)
-  def createDeserializer[C <: Converter](jsonParser: JsonParser): JsonDeserializer[C] = new JsonDeserializerEx[C](jsonParser)
+class SerializerFactoryEx[C <: Converter] extends SerializerFactory[C, JsonSerializerEx[C], JsonDeserializerEx[C]] {
+  def createSerializer(jsonGenerator: JsonGenerator): JsonSerializerEx[C] = new JsonSerializerEx[C](jsonGenerator)
+  def createDeserializer(jsonParser: JsonParser): JsonDeserializerEx[C] = new JsonDeserializerEx[C](jsonParser)
 }
 
 class TestSerializerExtension extends FlatSpec with Matchers {
@@ -30,16 +30,16 @@ class TestSerializerExtension extends FlatSpec with Matchers {
   import eu.inn.binders.json._
 
   "Json " should " serialize extra data" in {
-    implicit val serializerFactory: SerializerFactory = new SerializerFactoryEx
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
     val t = new ExtraDataType("ha")
     val str = t.toJson
-    assert (str === """-ha-""")
+    assert (str === "\"-ha-\"")
   }
 
   "Json " should " deserialize extra data" in {
-    implicit val serializerFactory: SerializerFactory = new SerializerFactoryEx
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
     val o = """"ha"""".parseJson[ExtraDataType]
     val t = new ExtraDataType("ha")
-    assert (o === t)
+    assert (o.v === t.v)
   }
 }

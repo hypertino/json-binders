@@ -11,13 +11,9 @@ trait JsonMacroImpl {
   def parseJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
-      var o: Option[${weakTypeOf[O]}] = None
-      eu.inn.binders.json.internal.JsonMacro.withFactory(factory => {
-        factory.withParser[${weakTypeOf[O]}](t.jsonString, deserializer=> {
-          o = Some(deserializer.unbind[${weakTypeOf[O]}])
-        })
+      SerializerFactory.findFactory().withParser[${weakTypeOf[O]}](t.jsonString, deserializer=> {
+        deserializer.unbind[${weakTypeOf[O]}]
       })
-      o.get
     }"""
     //println(block)
     block
@@ -26,15 +22,11 @@ trait JsonMacroImpl {
   def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
-      var s: Option[String] = None
-      eu.inn.binders.json.internal.JsonMacro.withFactory(factory => {
-        factory.withGenerator(serializer=> {
-          s = Some(serializer.bind[${weakTypeOf[O]}](t.obj))
-        })
+      SerializerFactory.findFactory().withGenerator(serializer=> {
+        serializer.bind[${weakTypeOf[O]}](t.obj)
       })
-      s.get
     }"""
-    println(block)
+    //println(block)
     block
   }
 

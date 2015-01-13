@@ -1,11 +1,5 @@
 package eu.inn.binders.json.internal
 
-import java.io.ByteArrayOutputStream
-
-import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory}
-import eu.inn.binders.json.{SerializerFactory, JsonSerializer, JsonDeserializer}
-import eu.inn.binders.naming.Converter
-
 import scala.language.experimental.macros
 import scala.language.reflectiveCalls
 import scala.reflect.macros.Context
@@ -47,11 +41,5 @@ object JsonMacro {
       val c: c0.type = c0
     } with JsonMacroImpl
     c.Expr[Map[String, O]](bundle.readMap[S,O])
-  }
-
-  def withFactory[C <: Converter, S <: JsonSerializer[C], D <: JsonDeserializer[C]]
-    (codeBlock: (SerializerFactory[C,S,D]) => Unit)
-    (implicit factory: SerializerFactory[C,S,D]) = {
-    codeBlock(factory)
   }
 }

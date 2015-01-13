@@ -21,7 +21,7 @@ trait SerializerFactory[C <: Converter, S <: JsonSerializer[C], D <: JsonDeseria
     val jf = new JsonFactory()
     val ba = new ByteArrayOutputStream()
     try {
-      val jg = jf.createGenerator(ba, JsonEncoding.UTF8)
+      val jg = jf.createGenerator(ba, encoding)
       try {
         val js = createSerializer(jg)
         codeBlock(js)
@@ -33,9 +33,10 @@ trait SerializerFactory[C <: Converter, S <: JsonSerializer[C], D <: JsonDeseria
     finally {
       ba.close()
     }
-    ba.toString("UTF-8")
+    ba.toString(encoding.getJavaName)
   }
 
+  def encoding = JsonEncoding.UTF8
   def createSerializer(jsonGenerator: JsonGenerator): S
   def createDeserializer(jsonParser: JsonParser): D
 }
@@ -46,5 +47,7 @@ class DefaultSerializerFactory[C <: Converter] extends SerializerFactory[C, Json
 }
 
 object SerializerFactory {
-  implicit val serializerFactory = new DefaultSerializerFactory[PlainConverter]
+  implicit val defaultSerializerFactory = new DefaultSerializerFactory[PlainConverter]
+  def findFactory[C <: Converter, S <: JsonSerializer[C], D <: JsonDeserializer[C]]()
+  (implicit factory: SerializerFactory[C, S, D]): SerializerFactory[C, S, D] = factory
 }
