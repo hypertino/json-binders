@@ -6,6 +6,7 @@ import eu.inn.binders.naming.{PlainConverter, Converter}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ExtraDataType(val v: String)
+case class InnerWithExtraData(extra: ExtraDataType)
 
 class JsonSerializerEx[C <: Converter](jsonGenerator: JsonGenerator) extends JsonSerializer[C](jsonGenerator) {
   override def createFieldSerializer() = new JsonSerializerEx[C](jsonGenerator)
@@ -41,5 +42,19 @@ class TestSerializerExtension extends FlatSpec with Matchers {
     val o = """"ha"""".parseJson[ExtraDataType]
     val t = new ExtraDataType("ha")
     assert (o.v === t.v)
+  }
+
+  "Json " should " serialize extra data inside class" in {
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
+    val t = InnerWithExtraData(new ExtraDataType("ha"))
+    val str = t.toJson
+    assert (str === "{\"extra\":\"-ha-\"}")
+  }
+
+  "Json " should " deserialize extra data to class" in {
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
+    val o = "{\"extra\":\"-ha-\"}".parseJson[InnerWithExtraData]
+    val t = InnerWithExtraData(new ExtraDataType("ha"))
+    assert (o === t)
   }
 }
