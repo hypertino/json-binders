@@ -1,22 +1,22 @@
 
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
 import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
-import eu.inn.binders.json.{SerializerFactory, JsonSerializer, JsonDeserializer}
-import eu.inn.binders.naming.{PlainConverter, Converter}
+import eu.inn.binders.json._
+import eu.inn.binders.naming.{Converter, PlainConverter}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ExtraDataType(val v: String)
 case class InnerWithExtraData(extra: ExtraDataType)
 
-class JsonSerializerEx[C <: Converter](jsonGenerator: JsonGenerator) extends JsonSerializer[C](jsonGenerator) {
-  override def createFieldSerializer() = new JsonSerializerEx[C](jsonGenerator)
+class JsonSerializerEx[C <: Converter](jsonGenerator: JsonGenerator) extends JsonSerializerBase[C, JsonSerializerEx[C]](jsonGenerator) {
+  protected override def createFieldSerializer() = new JsonSerializerEx[C](jsonGenerator)
 
   def writeExtraDataType(value: ExtraDataType): Unit = jsonGenerator.writeString("-" + value.v + "-")
 }
 
-class JsonDeserializerEx[C <: Converter]protected (jsonNode: JsonNode, override val fieldName: Option[String]) extends JsonDeserializer[C](jsonNode, fieldName) {
+class JsonDeserializerEx[C <: Converter]protected (jsonNode: JsonNode, override val fieldName: Option[String]) extends JsonDeserializerBase[C, JsonDeserializerEx[C]](jsonNode, fieldName) {
   def this (jsonParser: JsonParser) = this({val mapper = new ObjectMapper(); mapper.readTree(jsonParser)}, None)
-  override def createFieldDeserializer(jsonNode: JsonNode, fieldName: Option[String]) = new JsonDeserializerEx[C](jsonNode, fieldName)
+  protected override def createFieldDeserializer(jsonNode: JsonNode, fieldName: Option[String]) = new JsonDeserializerEx[C](jsonNode, fieldName)
 
   def readExtraDataType() : ExtraDataType = new ExtraDataType(jsonNode.asText())
 }
@@ -53,8 +53,8 @@ class TestSerializerExtension extends FlatSpec with Matchers {
 
   "Json " should " deserialize extra data to class" in {
     implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
-    val o = "{\"extra\":\"-ha-\"}".parseJson[InnerWithExtraData]
+    val o = "{\"extra\":\"ha\"}".parseJson[InnerWithExtraData]
     val t = InnerWithExtraData(new ExtraDataType("ha"))
-    assert (o === t)
+    assert (o.extra.v === t.extra.v)
   }
 }

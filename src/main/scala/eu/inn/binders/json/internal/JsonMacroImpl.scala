@@ -8,7 +8,7 @@ trait JsonMacroImpl {
   val c: Context
   import c.universe._
 
-  def parseJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
+  def parseJson[O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
       SerializerFactory.findFactory().withParser[${weakTypeOf[O]}](t.jsonString, deserializer=> {
@@ -19,7 +19,7 @@ trait JsonMacroImpl {
     block
   }
 
-  def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]: c.Tree = {
+  def toJson[O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
       SerializerFactory.findFactory().withGenerator(serializer=> {

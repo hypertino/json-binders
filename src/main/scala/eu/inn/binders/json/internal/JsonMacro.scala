@@ -5,22 +5,22 @@ import scala.language.reflectiveCalls
 import scala.reflect.macros.Context
 
 object JsonMacro {
-  def parseJson[C : c.WeakTypeTag, O: c.WeakTypeTag]
+  def parseJson[O: c.WeakTypeTag]
     (c: Context): c.Expr[O] = {
     val c0: c.type = c
     val bundle = new {
       val c: c0.type = c0
     } with JsonMacroImpl
-    c.Expr[O](bundle.parseJson[C, O])
+    c.Expr[O](bundle.parseJson[O])
   }
 
-  def toJson[C : c.WeakTypeTag, O: c.WeakTypeTag]
+  def toJson[O: c.WeakTypeTag]
     (c: Context): c.Expr[String] = {
     val c0: c.type = c
     val bundle = new {
       val c: c0.type = c0
     } with JsonMacroImpl
-    c.Expr[String](bundle.toJson[C, O])
+    c.Expr[String](bundle.toJson[O])
   }
 
   def writeMap[S: c.WeakTypeTag, O: c.WeakTypeTag]

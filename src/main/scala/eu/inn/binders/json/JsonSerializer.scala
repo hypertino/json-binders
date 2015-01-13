@@ -5,16 +5,17 @@ import java.util.Date
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
 import eu.inn.binders.json.internal.JsonMacro
-import eu.inn.binders.naming.{Converter}
+import eu.inn.binders.naming.Converter
 import scala.language.experimental.macros
 
-class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends Serializer[C]{
-  def getFieldSerializer(fieldName: String): Option[JsonSerializer[C]] = {
+class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val jsonGenerator: JsonGenerator) extends Serializer[C]{
+
+  def getFieldSerializer(fieldName: String): Option[F] = {
     jsonGenerator.writeFieldName(fieldName)
     Some(createFieldSerializer())
   }
 
-  protected def createFieldSerializer() = new JsonSerializer[C](jsonGenerator)
+  protected def createFieldSerializer(): F = ???
 
   def writeNull(): Unit = jsonGenerator.writeNull()
   def writeInteger(value: Int): Unit = jsonGenerator.writeNumber(value)
@@ -25,7 +26,7 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
   def writeBoolean(value: Boolean): Unit = jsonGenerator.writeBoolean(value)
   def writeBigDecimal(value: BigDecimal): Unit = jsonGenerator.writeNumber(value.bigDecimal)
   def writeDate(value: Date): Unit = jsonGenerator.writeNumber(value.getTime)
-  def writeMap[T](value: Map[String,T]) = macro JsonMacro.writeMap[JsonSerializer[C], T]
+  def writeMap[T](value: Map[String,T]) = macro JsonMacro.writeMap[F, T]
 
   def beginObject(): Unit = {
     jsonGenerator.writeStartObject()
@@ -41,4 +42,8 @@ class JsonSerializer[C <: Converter](val jsonGenerator: JsonGenerator) extends S
   def endArray(): Unit = {
     jsonGenerator.writeEndArray()
   }
+}
+
+class JsonSerializer[C <: Converter](override val jsonGenerator: JsonGenerator) extends JsonSerializerBase[C, JsonSerializer[C]](jsonGenerator){
+  protected override def createFieldSerializer(): JsonSerializer[C] = new JsonSerializer[C](jsonGenerator)
 }

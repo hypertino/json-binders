@@ -3,9 +3,10 @@ package eu.inn.binders.json
 import java.io.ByteArrayOutputStream
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonParser, JsonGenerator}
+import eu.inn.binders.core.{Deserializer, Serializer}
 import eu.inn.binders.naming.{PlainConverter, Converter}
 
-trait SerializerFactory[C <: Converter, S <: JsonSerializer[C], D <: JsonDeserializer[C]] {
+trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]] {
   def withParser[T](jsonString: String, codeBlock: D ⇒ T): T = {
     val jf = new JsonFactory()
     val jp = jf.createParser(jsonString)
@@ -48,6 +49,6 @@ class DefaultSerializerFactory[C <: Converter] extends SerializerFactory[C, Json
 
 object SerializerFactory {
   implicit val defaultSerializerFactory = new DefaultSerializerFactory[PlainConverter]
-  def findFactory[C <: Converter, S <: JsonSerializer[C], D <: JsonDeserializer[C]]()
+  def findFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]]()
   (implicit factory: SerializerFactory[C, S, D]): SerializerFactory[C, S, D] = factory
 }
