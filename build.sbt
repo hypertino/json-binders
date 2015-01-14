@@ -1,6 +1,6 @@
 name := "binders-json"
 
-version := "0.4.7"
+version := "0.4.10"
 
 organization := "eu.inn"
 
@@ -16,7 +16,7 @@ libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4"
 
-libraryDependencies += "eu.inn" %% "binders-core" % "0.4.4"
+libraryDependencies += "eu.inn" %% "binders-core" % "0.4.10"
 
 libraryDependencies += "com.google.code.findbugs" % "jsr305" % "1.3.+"
 
