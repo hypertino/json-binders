@@ -1,6 +1,5 @@
 
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
-import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
 import eu.inn.binders.json._
 import eu.inn.binders.naming.{Converter, PlainConverter}
 import org.scalatest.{FlatSpec, Matchers}
@@ -14,11 +13,11 @@ class JsonSerializerEx[C <: Converter](jsonGenerator: JsonGenerator) extends Jso
   def writeExtraDataType(value: ExtraDataType): Unit = jsonGenerator.writeString("-" + value.v + "-")
 }
 
-class JsonDeserializerEx[C <: Converter]protected (jsonNode: JsonNode, override val fieldName: Option[String]) extends JsonDeserializerBase[C, JsonDeserializerEx[C]](jsonNode, fieldName) {
-  def this (jsonParser: JsonParser) = this({val mapper = new ObjectMapper(); mapper.readTree(jsonParser)}, None)
-  protected override def createFieldDeserializer(jsonNode: JsonNode, fieldName: Option[String]) = new JsonDeserializerEx[C](jsonNode, fieldName)
+class JsonDeserializerEx[C <: Converter] (jsonParser: JsonParser, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None) extends JsonDeserializerBase[C, JsonDeserializerEx[C]](jsonParser, moveToNextToken, fieldName) {
 
-  def readExtraDataType() : ExtraDataType = new ExtraDataType(jsonNode.asText())
+  protected override def createFieldDeserializer(jsonParser: JsonParser, moveToNextToken: Boolean, fieldName: Option[String]) = new JsonDeserializerEx[C](jsonParser, moveToNextToken, fieldName)
+
+  def readExtraDataType() : ExtraDataType = new ExtraDataType(jsonParser.getValueAsString)
 }
 
 class SerializerFactoryEx[C <: Converter] extends SerializerFactory[C, JsonSerializerEx[C], JsonDeserializerEx[C]] {
