@@ -15,7 +15,7 @@ trait JsonMacroImpl {
         deserializer.unbind[${weakTypeOf[O]}]
       })
     }"""
-    //println(block)
+    println(block)
     block
   }
 

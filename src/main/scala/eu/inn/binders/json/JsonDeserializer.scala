@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.{JsonToken, JsonParser}
 import eu.inn.binders.core.Deserializer
 import eu.inn.binders.json.internal.JsonMacro
 import eu.inn.binders.naming.Converter
+import scala.collection.mutable.ArrayBuffer
 import scala.language.experimental.macros
 
 class JsonDeserializeException(message: String) extends RuntimeException(message)
@@ -74,6 +75,26 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
   def readBigDecimal(): BigDecimal = JsonDeserializer.stringToBigDecimal(jsonParser.getText)
   def readDate(): Date = new Date(jsonParser.getLongValue)
   def readMap[T](): Map[String,T] = macro JsonMacro.readMap[I, T]
+
+  def readAny(): Any = {
+    jsonParser.getCurrentToken() match {
+      case JsonToken.VALUE_NULL => None
+      case JsonToken.VALUE_TRUE => true
+      case JsonToken.VALUE_FALSE => false
+      case JsonToken.VALUE_STRING => jsonParser.getText
+      case JsonToken.VALUE_NUMBER_INT => BigDecimal(jsonParser.getDecimalValue)
+      case JsonToken.VALUE_NUMBER_FLOAT => BigDecimal(jsonParser.getDecimalValue)
+      //case JsonToken.START_OBJECT => readMap[Any]()
+      case JsonToken.START_ARRAY => {
+        var array = new ArrayBuffer[Any]()
+        while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+          array += readAny()
+        }
+        array
+      }
+      case _ => throw new JsonDeserializeException(s"Can't deserialize token: ${jsonParser.getCurrentToken} at ${jsonParser.getCurrentLocation}")
+    }
+  }
 }
 
 class JsonDeserializer[C <: Converter] (jsonParser: JsonParser, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None)

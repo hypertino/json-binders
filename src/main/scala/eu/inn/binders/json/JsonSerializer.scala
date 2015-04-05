@@ -8,6 +8,8 @@ import eu.inn.binders.json.internal.JsonMacro
 import eu.inn.binders.naming.Converter
 import scala.language.experimental.macros
 
+class JsonSerializeException(message: String) extends RuntimeException(message)
+
 class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val jsonGenerator: JsonGenerator) extends Serializer[C]{
 
   def getFieldSerializer(fieldName: String): Option[F] = {
@@ -41,6 +43,22 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
   }
   def endArray(): Unit = {
     jsonGenerator.writeEndArray()
+  }
+
+  def writeAny(value: Any): Unit = {
+    value match {
+      case null => writeNull()
+      case i: Integer => writeInteger(i)
+      case l: Long => writeLong(l)
+      case s: String =>writeString(s)
+      case f: Float => writeFloat(f)
+      case d: Double => writeDouble(d)
+      case b: Boolean => writeBoolean(b)
+      case dc: BigDecimal => writeBigDecimal(dc)
+      case dt: Date => writeDate(dt)
+      //case m: Map[String, Any] => writeMap[Any](m)
+      case _ => throw new JsonSerializeException("Can't serialize field:" + value)
+    }
   }
 }
 
