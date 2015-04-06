@@ -4,7 +4,7 @@ import java.util.Date
 
 import com.fasterxml.jackson.core.{JsonToken, JsonParser}
 import eu.inn.binders.core.Deserializer
-import eu.inn.binders.json.internal.JsonMacro
+import eu.inn.binders.dynamic.DynamicValue
 import eu.inn.binders.naming.Converter
 import scala.collection.mutable.ArrayBuffer
 import scala.language.experimental.macros
@@ -74,23 +74,28 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
   def readBoolean(): Boolean = jsonParser.getBooleanValue
   def readBigDecimal(): BigDecimal = JsonDeserializer.stringToBigDecimal(jsonParser.getText)
   def readDate(): Date = new Date(jsonParser.getLongValue)
-  def readMap[T](): Map[String,T] = macro JsonMacro.readMap[I, T]
 
-  def readAny(): Any = {
+  def readDynamic(): DynamicValue = {
+    import eu.inn.binders.dynamic._
     jsonParser.getCurrentToken() match {
-      case JsonToken.VALUE_NULL => None
-      case JsonToken.VALUE_TRUE => true
-      case JsonToken.VALUE_FALSE => false
-      case JsonToken.VALUE_STRING => jsonParser.getText
-      case JsonToken.VALUE_NUMBER_INT => BigDecimal(jsonParser.getDecimalValue)
-      case JsonToken.VALUE_NUMBER_FLOAT => BigDecimal(jsonParser.getDecimalValue)
-      //case JsonToken.START_OBJECT => readMap[Any]()
+      case JsonToken.VALUE_NULL => null
+      case JsonToken.VALUE_TRUE => Bool(true)
+      case JsonToken.VALUE_FALSE => Bool(false)
+      case JsonToken.VALUE_STRING => Text(jsonParser.getText)
+      case JsonToken.VALUE_NUMBER_INT => Number(jsonParser.getDecimalValue)
+      case JsonToken.VALUE_NUMBER_FLOAT => Number(jsonParser.getDecimalValue)
+      case JsonToken.START_OBJECT => {
+        var map = new scala.collection.mutable.HashMap[String, DynamicValue]()
+        iterator().foreach(i => {
+          val d = i.asInstanceOf[JsonDeserializerBase[_,_]]
+          map += d.fieldName.get -> d.readDynamic()
+        })
+        Obj(map.toMap)
+      }
       case JsonToken.START_ARRAY => {
-        var array = new ArrayBuffer[Any]()
-        while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-          array += readAny()
-        }
-        array
+        val array = new ArrayBuffer[DynamicValue]()
+        iterator().foreach(i => array += i.asInstanceOf[JsonDeserializerBase[_,_]].readDynamic())
+        Lst(array)
       }
       case _ => throw new JsonDeserializeException(s"Can't deserialize token: ${jsonParser.getCurrentToken} at ${jsonParser.getCurrentLocation}")
     }

@@ -22,24 +22,4 @@ object JsonMacro {
     } with JsonMacroImpl
     c.Expr[String](bundle.toJson[O])
   }
-
-  def writeMap[S: c.WeakTypeTag, O: c.WeakTypeTag]
-  (c: Context)
-  (value: c.Expr[Map[String, O]]): c.Expr[Any] = {
-
-    val c0: c.type = c
-    val bundle = new {
-      val c: c0.type = c0
-    } with JsonMacroImpl
-    c.Expr[Any](bundle.writeMap[S,O](value.tree))
-  }
-
-  def readMap[S: c.WeakTypeTag, O: c.WeakTypeTag]
-  (c: Context)(): c.Expr[Map[String, O]] = {
-    val c0: c.type = c
-    val bundle = new {
-      val c: c0.type = c0
-    } with JsonMacroImpl
-    c.Expr[Map[String, O]](bundle.readMap[S,O])
-  }
 }

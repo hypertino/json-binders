@@ -4,6 +4,7 @@ import java.util.Date
 
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
+import eu.inn.binders.dynamic._
 import eu.inn.binders.json.internal.JsonMacro
 import eu.inn.binders.naming.Converter
 import scala.language.experimental.macros
@@ -28,7 +29,6 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
   def writeBoolean(value: Boolean): Unit = jsonGenerator.writeBoolean(value)
   def writeBigDecimal(value: BigDecimal): Unit = jsonGenerator.writeNumber(value.bigDecimal)
   def writeDate(value: Date): Unit = jsonGenerator.writeNumber(value.getTime)
-  def writeMap[T](value: Map[String,T]) = macro JsonMacro.writeMap[F, T]
 
   def beginObject(): Unit = {
     jsonGenerator.writeStartObject()
@@ -45,20 +45,27 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
     jsonGenerator.writeEndArray()
   }
 
-  def writeAny(value: Any): Unit = {
-    value match {
-      case null => writeNull()
-      case i: Integer => writeInteger(i)
-      case l: Long => writeLong(l)
-      case s: String =>writeString(s)
-      case f: Float => writeFloat(f)
-      case d: Double => writeDouble(d)
-      case b: Boolean => writeBoolean(b)
-      case dc: BigDecimal => writeBigDecimal(dc)
-      case dt: Date => writeDate(dt)
-      //case m: Map[String, Any] => writeMap[Any](m)
-      case _ => throw new JsonSerializeException("Can't serialize field:" + value)
-    }
+  def writeDynamic(value: DynamicValue): Unit = {
+    if (value == null)
+      writeNull()
+    else
+      value.accept(new DynamicVisitor[Unit] {
+        override def visitNumber(d: Number) = writeBigDecimal(d.v)
+        override def visitBool(d: Bool) = writeBoolean(d.v)
+        override def visitObj(d: Obj) = {
+          beginObject()
+          d.v.foreach(kv => {
+            getFieldSerializer(kv._1).get.asInstanceOf[JsonSerializerBase[_,_]].writeDynamic(kv._2)
+          })
+          endObject()
+        }
+        override def visitText(d: Text) = writeString(d.v)
+        override def visitLst(d: Lst) = {
+          beginArray()
+          d.v.foreach(writeDynamic)
+          endArray()
+        }
+      })
   }
 }
 
