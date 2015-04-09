@@ -18,8 +18,10 @@ class TestMixJsonSerializer extends FlatSpec with Matchers {
   }
 
   "Json " should " deserialize Mixed" in {
-    val o = """TODO{"a":1,"b":"ha","c":null}""".parseJson[DynamicValue]
-    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->null))
+    val o = """{"a":1,"b":"ha","extra":{"f":555}}""".parseJson[Mixed]
+    val t = Mixed(1, "ha", Obj(Map(
+      "f" -> Number(555)
+    )))
     assert (o === t)
   }
 }
