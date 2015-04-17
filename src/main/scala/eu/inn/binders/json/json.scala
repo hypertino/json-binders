@@ -1,5 +1,7 @@
 package eu.inn.binders
 
+import java.io.{OutputStream, InputStream}
+
 import eu.inn.binders.json.internal.JsonMacro
 import eu.inn.binders.naming.{PlainConverter, Converter}
 import scala.language.experimental.macros
@@ -12,5 +14,13 @@ package object json {
 
   implicit class JsonStringGenerator[O](val obj: O) {
     def toJson: String = macro JsonMacro.toJson[O]
+  }
+
+  implicit class JsonStringReader(val inputStream: InputStream) {
+    def readJson[O]: O = macro JsonMacro.readJson[O]
+  }
+
+  implicit class JsonStringWriter[O](val obj: O) {
+    def writeJson(outputStream: OutputStream): Unit = macro JsonMacro.writeJson[O]
   }
 }
