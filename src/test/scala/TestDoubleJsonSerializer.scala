@@ -52,6 +52,6 @@ class TestDoubleJsonSerializer extends FlatSpec with Matchers {
 
     val t2 = TestDoubleN(Some(1234),None)
     val str2 = t2.toJson
-    assert (str2 === """{"doubleValN1":1234.0,"doubleValN2":null}""")
+    assert (str2 === """{"doubleValN1":1234.0}""")
   }
 }

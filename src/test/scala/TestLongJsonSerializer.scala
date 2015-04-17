@@ -53,6 +53,6 @@ class TestLongJsonSerializer extends FlatSpec with Matchers {
 
     val t2 = TestLongN(Some(1234),None)
     val str2 = t2.toJson
-    assert (str2 === """{"longValN1":1234,"longValN2":null}""")
+    assert (str2 === """{"longValN1":1234}""")
   }
 }

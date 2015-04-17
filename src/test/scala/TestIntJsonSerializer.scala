@@ -53,6 +53,6 @@ class TestIntJsonSerializer extends FlatSpec with Matchers {
 
     val t2 = TestIntN(Some(1234),None)
     val str2 = t2.toJson
-    assert (str2 === """{"intValN1":1234,"intValN2":null}""")
+    assert (str2 === """{"intValN1":1234}""")
   }
 }

@@ -59,6 +59,6 @@ class TestDateJsonSerializer extends FlatSpec with Matchers with BeforeAndAfter 
 
     val t2 = TestDateN(Some(new Date(1418402444000l)),None)
     val str2 = t2.toJson
-    assert (str2 === """{"dateValN1":1418402444000,"dateValN2":null}""")
+    assert (str2 === """{"dateValN1":1418402444000}""")
   }
 }

@@ -54,6 +54,6 @@ class TestBigDecimalJsonSerializer extends FlatSpec with Matchers {
 
       val t2 = TestBigDecimalN(Some(1234),None)
       val str2 = t2.toJson
-      assert (str2 === """{"bigdecimalValN1":1234,"bigdecimalValN2":null}""")
+      assert (str2 === """{"bigdecimalValN1":1234}""")
     }
 }
