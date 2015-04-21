@@ -19,6 +19,11 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     }
   }
 
+  def withJsonParser[T](jsonParser: JsonParser, codeBlock: D ⇒ T): T = {
+    val jds = createDeserializer(jsonParser)
+    codeBlock(jds)
+  }
+
   def withStreamParser[T](inputStream: InputStream, codeBlock: D ⇒ T): T = {
     val jp = jf.createParser(inputStream)
     try {
@@ -56,6 +61,11 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     finally {
       jg.close()
     }
+  }
+
+  def withJsonGenerator(outputGenerator: JsonGenerator, codeBlock: S ⇒ Unit): Unit = {
+    val js = createSerializer(outputGenerator)
+    codeBlock(js)
   }
 
   def encoding = JsonEncoding.UTF8
