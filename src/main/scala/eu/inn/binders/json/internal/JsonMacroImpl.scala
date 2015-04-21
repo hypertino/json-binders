@@ -13,9 +13,9 @@ trait JsonMacroImpl {
   def parseJson[O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStringParser[${weakTypeOf[O]}](t.jsonString, deserializer=> {
+      SerializerFactory.findFactory().withStringParser[${weakTypeOf[O]}](t.jsonString) { deserializer=>
         deserializer.unbind[${weakTypeOf[O]}]
-      })
+      }
     }"""
     //println(block)
     block
@@ -24,9 +24,9 @@ trait JsonMacroImpl {
   def toJson[O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStringGenerator(serializer=> {
+      SerializerFactory.findFactory().withStringGenerator { serializer=>
         serializer.bind[${weakTypeOf[O]}](t.obj)
-      })
+      }
     }"""
     //println(block)
     block
@@ -35,9 +35,9 @@ trait JsonMacroImpl {
   def readJson[O: c.WeakTypeTag]: c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStreamParser[${weakTypeOf[O]}](t.inputStream, deserializer=> {
+      SerializerFactory.findFactory().withStreamParser[${weakTypeOf[O]}](t.inputStream) { deserializer=>
         deserializer.unbind[${weakTypeOf[O]}]
-      })
+      }
     }"""
     //println(block)
     block
@@ -46,9 +46,9 @@ trait JsonMacroImpl {
   def writeJson[O: c.WeakTypeTag](outputStream: c.Expr[OutputStream]): c.Tree = {
     val block = q"""{
       val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStreamGenerator($outputStream, serializer=> {
+      SerializerFactory.findFactory().withStreamGenerator($outputStream) { serializer=>
         serializer.bind[${weakTypeOf[O]}](t.obj)
-      })
+      }
     }"""
     //println(block)
     block

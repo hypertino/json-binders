@@ -9,7 +9,7 @@ import eu.inn.binders.naming.{PlainConverter, Converter}
 trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]] {
   val jf = new JsonFactory()
 
-  def withStringParser[T](jsonString: String, codeBlock: D ⇒ T): T = {
+  def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T = {
     val jp = jf.createParser(jsonString)
     try {
       val jds = createDeserializer(jp)
@@ -19,12 +19,12 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     }
   }
 
-  def withJsonParser[T](jsonParser: JsonParser, codeBlock: D ⇒ T): T = {
+  def withJsonParser[T](jsonParser: JsonParser)(codeBlock: D ⇒ T): T = {
     val jds = createDeserializer(jsonParser)
     codeBlock(jds)
   }
 
-  def withStreamParser[T](inputStream: InputStream, codeBlock: D ⇒ T): T = {
+  def withStreamParser[T](inputStream: InputStream)(codeBlock: D ⇒ T): T = {
     val jp = jf.createParser(inputStream)
     try {
       val jds = createDeserializer(jp)
@@ -52,7 +52,7 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     ba.toString(encoding.getJavaName)
   }
 
-  def withStreamGenerator(outputStream: OutputStream, codeBlock: S ⇒ Unit): Unit = {
+  def withStreamGenerator(outputStream: OutputStream)(codeBlock: S ⇒ Unit): Unit = {
     val jg = jf.createGenerator(outputStream, encoding)
     try {
       val js = createSerializer(jg)
@@ -63,7 +63,7 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     }
   }
 
-  def withJsonGenerator(outputGenerator: JsonGenerator, codeBlock: S ⇒ Unit): Unit = {
+  def withJsonGenerator(outputGenerator: JsonGenerator)(codeBlock: S ⇒ Unit): Unit = {
     val js = createSerializer(outputGenerator)
     codeBlock(js)
   }
