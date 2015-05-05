@@ -6,7 +6,7 @@ import scala.language.experimental.macros
 import scala.language.reflectiveCalls
 import scala.reflect.macros.Context
 
-object JsonMacro {
+private [json] object JsonMacro {
   def parseJson[O: c.WeakTypeTag]
     (c: Context): c.Expr[O] = {
     val c0: c.type = c

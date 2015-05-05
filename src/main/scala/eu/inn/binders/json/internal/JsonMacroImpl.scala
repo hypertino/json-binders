@@ -6,7 +6,7 @@ import scala.language.experimental.macros
 import scala.language.reflectiveCalls
 import scala.reflect.macros.Context
 
-trait JsonMacroImpl {
+private [json] trait JsonMacroImpl {
   val c: Context
   import c.universe._
 
