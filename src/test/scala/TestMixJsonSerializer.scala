@@ -24,4 +24,17 @@ class TestMixJsonSerializer extends FlatSpec with Matchers {
     )))
     assert (o === t)
   }
+
+  "Json " should " serialize Mixed (Null)" in {
+
+    val t = Mixed(1, "ha", Null)
+    val str = t.toJson
+    assert (str === """{"a":1,"b":"ha"}""")
+  }
+
+  "Json " should " deserialize Mixed (Null)" in {
+    val o = """{"a":1,"b":"ha"}""".parseJson[Mixed]
+    val t = Mixed(1, "ha", Null)
+    assert (o === t)
+  }
 }

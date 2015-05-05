@@ -64,6 +64,7 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
           d.v.foreach(writeValue)
           endArray()
         }
+        override def visitNull() = writeNull()
       })
   }
 }
