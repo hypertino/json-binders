@@ -5,7 +5,6 @@ import java.util.Date
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
 import eu.inn.binders.dynamic._
-import eu.inn.binders.json.internal.JsonMacro
 import eu.inn.binders.naming.Converter
 import scala.language.experimental.macros
 
@@ -45,24 +44,24 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
     jsonGenerator.writeEndArray()
   }
 
-  def writeDynamic(value: DynamicValue): Unit = {
+  def writeValue(value: Value): Unit = {
     if (value == null)
       writeNull()
     else
-      value.accept(new DynamicVisitor[Unit] {
+      value.accept(new ValueVisitor[Unit] {
         override def visitNumber(d: Number) = writeBigDecimal(d.v)
         override def visitBool(d: Bool) = writeBoolean(d.v)
         override def visitObj(d: Obj) = {
           beginObject()
           d.v.foreach(kv => {
-            getFieldSerializer(kv._1).get.asInstanceOf[JsonSerializerBase[_,_]].writeDynamic(kv._2)
+            getFieldSerializer(kv._1).get.asInstanceOf[JsonSerializerBase[_,_]].writeValue(kv._2)
           })
           endObject()
         }
         override def visitText(d: Text) = writeString(d.v)
         override def visitLst(d: Lst) = {
           beginArray()
-          d.v.foreach(writeDynamic)
+          d.v.foreach(writeValue)
           endArray()
         }
       })

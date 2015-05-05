@@ -4,7 +4,7 @@ import java.util.Date
 
 import com.fasterxml.jackson.core.{JsonToken, JsonParser}
 import eu.inn.binders.core.Deserializer
-import eu.inn.binders.dynamic.DynamicValue
+import eu.inn.binders.dynamic.Value
 import eu.inn.binders.naming.Converter
 import scala.collection.mutable.ArrayBuffer
 import scala.language.experimental.macros
@@ -75,7 +75,7 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
   def readBigDecimal(): BigDecimal = JsonDeserializer.stringToBigDecimal(jsonParser.getText)
   def readDate(): Date = new Date(jsonParser.getLongValue)
 
-  def readDynamic(): DynamicValue = {
+  def readValue(): Value = {
     import eu.inn.binders.dynamic._
     jsonParser.getCurrentToken() match {
       case JsonToken.VALUE_NULL => null
@@ -85,16 +85,16 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
       case JsonToken.VALUE_NUMBER_INT => Number(jsonParser.getDecimalValue)
       case JsonToken.VALUE_NUMBER_FLOAT => Number(jsonParser.getDecimalValue)
       case JsonToken.START_OBJECT => {
-        var map = new scala.collection.mutable.HashMap[String, DynamicValue]()
+        var map = new scala.collection.mutable.HashMap[String, Value]()
         iterator().foreach(i => {
           val d = i.asInstanceOf[JsonDeserializerBase[_,_]]
-          map += d.fieldName.get -> d.readDynamic()
+          map += d.fieldName.get -> d.readValue()
         })
         Obj(map.toMap)
       }
       case JsonToken.START_ARRAY => {
-        val array = new ArrayBuffer[DynamicValue]()
-        iterator().foreach(i => array += i.asInstanceOf[JsonDeserializerBase[_,_]].readDynamic())
+        val array = new ArrayBuffer[Value]()
+        iterator().foreach(i => array += i.asInstanceOf[JsonDeserializerBase[_,_]].readValue())
         Lst(array)
       }
       case _ => throw new JsonDeserializeException(s"Can't deserialize token: ${jsonParser.getCurrentToken} at ${jsonParser.getCurrentLocation}")

@@ -2,7 +2,7 @@
 import eu.inn.binders.dynamic._
 import org.scalatest.{FlatSpec, Matchers}
 
-case class Mixed(a: Int, b: String, extra: DynamicValue)
+case class Mixed(a: Int, b: String, extra: Value)
 
 class TestMixJsonSerializer extends FlatSpec with Matchers {
 
