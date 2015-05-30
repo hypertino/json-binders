@@ -1,6 +1,6 @@
 name := "binders-json"
 
-version := "0.6"
+version := "0.6-SNAPSHOT"
 
 organization := "eu.inn"
 
@@ -8,7 +8,10 @@ scalaVersion := "2.11.6"
 
 crossScalaVersions := Seq("2.11.6", "2.10.4")
 
-resolvers ++= Seq("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/")
+resolvers ++= Seq(
+    Resolver.typesafeRepo("releases"),
+    Resolver.sonatypeRepo("public")
+  )
 
 libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
 
