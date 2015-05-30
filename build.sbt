@@ -1,6 +1,6 @@
 name := "binders-json"
 
-version := "0.6"
+version := "0.6-SNAPSHOT"
 
 organization := "eu.inn"
 
@@ -9,7 +9,6 @@ scalaVersion := "2.11.6"
 crossScalaVersions := Seq("2.11.6", "2.10.4")
 
 resolvers ++= Seq(
-    Resolver.typesafeRepo("releases"),
     Resolver.sonatypeRepo("public")
   )
 
