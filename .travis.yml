@@ -1,5 +1,10 @@
 language: scala
 scala:
-- 2.11.4
-- 2.10.4
-
+- 2.11.6
+env:
+  global:
+  - secure: UYLCY9QUIWRq+hlq8e+X1zyiOrnZig1IqVveBhwDFT9C83k7KkndeUW8smeMKaJO+0XqqlgPFgzN2MnfUPFpMDVYfyW/bQjaSFm93kT8W7+9MpV4oGgnLysDiuvqLmnNuqZ2Ixptlt2/qiV4pzRY67xDufoqQXwtVi5XlFzjEf0=
+  - secure: DZlJ0FNHMB2hHC6uZ9L7aOCT3QDUUVN6jl//xuqI2HqLKLPwPfmWk6PYX+F61di3IhPhx07nRq+17zQYgWYAMru+Olr/ol9F3AqPNggVucHRteCJjmRKSBaeuCwvTzSw9fm15KmaPWHyfEH2k3O6kOs0V2I82O4bmtSqE7nHGDg=
+  - secure: QXgCmlPbE7uIbT37Z0Mh2DMP/fDwbhmkPm6Psx05VVl8R5VSNNevDtRXea/+Yzi6tHBCD4OlpH7/zjFM63SpRpPZZx3QkN9C/2VRTToTW8je0Dukc5Tx+0O8DHKMAum8e6u7vinAHkWCRjRCQV6d7gzZxVpq3yGmifdXwub9NDU=
+  - secure: cKuqINbVkqbdXVzHt+BM33MVFmvKavoc0EZQIesWHqQ9QaEkH1ejl7NavqtcWYct7H5eojeuSapMYGyYF9aIN2l97OhwuRN7wmuHb1HH20mPhhyJHECqgfsnCo0iz68M8BRioozt1O81TQNQ+4Aa7WmqioqMkxqPhFHkGNLqTX4=
+script: "$TRAVIS_BUILD_DIR/travis/build.sh"
