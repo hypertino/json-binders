@@ -108,8 +108,10 @@ class JsonDeserializer[C <: Converter] (jsonParser: JsonParser, override val mov
 }
 
 object JsonDeserializer {
+
+  private val precision = new java.math.MathContext(150)
+
   def stringToBigDecimal(s: String): BigDecimal ={
-    val precision = 150//s.size
-    BigDecimal(s, new java.math.MathContext(precision))
+    BigDecimal(s, precision)
   }
 }
