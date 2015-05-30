@@ -1,6 +1,6 @@
 name := "binders-json"
 
-version := "0.6-SNAPSHOT"
+version := "0.6"
 
 organization := "eu.inn"
 
