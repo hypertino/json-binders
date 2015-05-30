@@ -1,14 +1,15 @@
 package eu.inn.binders.json
 
-import java.io.ByteArrayOutputStream
+import java.io.{OutputStream, InputStream, ByteArrayOutputStream}
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonParser, JsonGenerator}
 import eu.inn.binders.core.{Deserializer, Serializer}
 import eu.inn.binders.naming.{PlainConverter, Converter}
 
 trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]] {
-  def withParser[T](jsonString: String, codeBlock: D ⇒ T): T = {
-    val jf = new JsonFactory()
+  val jf = new JsonFactory()
+
+  def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T = {
     val jp = jf.createParser(jsonString)
     try {
       val jds = createDeserializer(jp)
@@ -18,8 +19,22 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     }
   }
 
-  def withGenerator(codeBlock: S ⇒ Unit): String = {
-    val jf = new JsonFactory()
+  def withJsonParser[T](jsonParser: JsonParser)(codeBlock: D ⇒ T): T = {
+    val jds = createDeserializer(jsonParser)
+    codeBlock(jds)
+  }
+
+  def withStreamParser[T](inputStream: InputStream)(codeBlock: D ⇒ T): T = {
+    val jp = jf.createParser(inputStream)
+    try {
+      val jds = createDeserializer(jp)
+      codeBlock(jds)
+    } finally {
+      jp.close()
+    }
+  }
+
+  def withStringGenerator(codeBlock: S ⇒ Unit): String = {
     val ba = new ByteArrayOutputStream()
     try {
       val jg = jf.createGenerator(ba, encoding)
@@ -35,6 +50,22 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
       ba.close()
     }
     ba.toString(encoding.getJavaName)
+  }
+
+  def withStreamGenerator(outputStream: OutputStream)(codeBlock: S ⇒ Unit): Unit = {
+    val jg = jf.createGenerator(outputStream, encoding)
+    try {
+      val js = createSerializer(jg)
+      codeBlock(js)
+    }
+    finally {
+      jg.close()
+    }
+  }
+
+  def withJsonGenerator(outputGenerator: JsonGenerator)(codeBlock: S ⇒ Unit): Unit = {
+    val js = createSerializer(outputGenerator)
+    codeBlock(js)
   }
 
   def encoding = JsonEncoding.UTF8

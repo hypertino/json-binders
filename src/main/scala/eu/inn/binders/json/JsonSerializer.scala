@@ -4,9 +4,11 @@ import java.util.Date
 
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
-import eu.inn.binders.json.internal.JsonMacro
+import eu.inn.binders.dynamic._
 import eu.inn.binders.naming.Converter
 import scala.language.experimental.macros
+
+class JsonSerializeException(message: String) extends RuntimeException(message)
 
 class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val jsonGenerator: JsonGenerator) extends Serializer[C]{
 
@@ -26,7 +28,6 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
   def writeBoolean(value: Boolean): Unit = jsonGenerator.writeBoolean(value)
   def writeBigDecimal(value: BigDecimal): Unit = jsonGenerator.writeNumber(value.bigDecimal)
   def writeDate(value: Date): Unit = jsonGenerator.writeNumber(value.getTime)
-  def writeMap[T](value: Map[String,T]) = macro JsonMacro.writeMap[F, T]
 
   def beginObject(): Unit = {
     jsonGenerator.writeStartObject()
@@ -41,6 +42,30 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
   }
   def endArray(): Unit = {
     jsonGenerator.writeEndArray()
+  }
+
+  def writeValue(value: Value): Unit = {
+    if (value == null)
+      writeNull()
+    else
+      value.accept(new ValueVisitor[Unit] {
+        override def visitNumber(d: Number) = writeBigDecimal(d.v)
+        override def visitBool(d: Bool) = writeBoolean(d.v)
+        override def visitObj(d: Obj) = {
+          beginObject()
+          d.v.foreach(kv => {
+            getFieldSerializer(kv._1).get.asInstanceOf[JsonSerializerBase[_,_]].writeValue(kv._2)
+          })
+          endObject()
+        }
+        override def visitText(d: Text) = writeString(d.v)
+        override def visitLst(d: Lst) = {
+          beginArray()
+          d.v.foreach(writeValue)
+          endArray()
+        }
+        override def visitNull() = writeNull()
+      })
   }
 }
 

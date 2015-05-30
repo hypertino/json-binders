@@ -1,12 +1,12 @@
 name := "binders-json"
 
-version := "0.4.11"
+version := "0.5.12"
 
 organization := "eu.inn"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
-crossScalaVersions := Seq("2.11.4", "2.10.4")
+crossScalaVersions := Seq("2.11.6", "2.10.4")
 
 resolvers ++= Seq("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/")
 
@@ -14,7 +14,7 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
 
-libraryDependencies += "eu.inn" %% "binders-core" % "0.4.11"
+libraryDependencies += "eu.inn" %% "binders-core" % "0.5.12"
 
 libraryDependencies += "com.google.code.findbugs" % "jsr305" % "1.3.+"
 

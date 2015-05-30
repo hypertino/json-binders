@@ -52,6 +52,6 @@ class TestFloatJsonSerializer extends FlatSpec with Matchers {
 
     val t2 = TestFloatN(Some(1234),None)
     val str2 = t2.toJson
-    assert (str2 === """{"floatValN1":1234.0,"floatValN2":null}""")
+    assert (str2 === """{"floatValN1":1234.0}""")
   }
 }
