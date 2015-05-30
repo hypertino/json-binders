@@ -1,6 +1,6 @@
 name := "binders-json"
 
-version := "0.6-SNAPSHOT"
+version := "0.6"
 
 organization := "eu.inn"
 
@@ -16,7 +16,7 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
 
-libraryDependencies += "eu.inn" %% "binders-core" % "0.6.50"
+libraryDependencies += "eu.inn" %% "binders-core" % "0.6.54"
 
 libraryDependencies += "com.google.code.findbugs" % "jsr305" % "1.3.+"
 

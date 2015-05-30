@@ -1,4 +1,5 @@
 
+import eu.inn.binders.core.BindOptions
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestInt(intVal: Int)
@@ -49,10 +50,17 @@ class TestIntJsonSerializer extends FlatSpec with Matchers {
   "Json " should " serialize class with Nullable Int" in {
     val t = TestIntN(Some(1234), Some(456))
     val str = t.toJson
-    assert (str === """{"intValN1":1234,"intValN2":456}""")
+    assert(str === """{"intValN1":1234,"intValN2":456}""")
 
-    val t2 = TestIntN(Some(1234),None)
+    val t2 = TestIntN(Some(1234), None)
     val str2 = t2.toJson
-    assert (str2 === """{"intValN1":1234}""")
+    assert(str2 === """{"intValN1":1234,"intValN2":null}""")
+  }
+
+  "Json " should " skip field when BindOptions(skipOptionalFields=true)" in {
+    implicit val op3: BindOptions = new BindOptions(true)
+    val t3 = TestIntN(Some(1234), None)
+    val str3 = t3.toJson
+    assert(str3 === """{"intValN1":1234}""")
   }
 }
