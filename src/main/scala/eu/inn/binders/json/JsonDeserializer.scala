@@ -78,7 +78,7 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
   def readValue(): Value = {
     import eu.inn.binders.dynamic._
     jsonParser.getCurrentToken() match {
-      case JsonToken.VALUE_NULL => null
+      case JsonToken.VALUE_NULL => Null
       case JsonToken.VALUE_TRUE => Bool(true)
       case JsonToken.VALUE_FALSE => Bool(false)
       case JsonToken.VALUE_STRING => Text(jsonParser.getText)

@@ -14,7 +14,7 @@ class TestDynamicJsonSerializer extends FlatSpec with Matchers {
 
   "Json " should " deserialize dynamic null" in {
     val o = "null".parseJson[Value]
-    val t = null
+    val t = Null
     assert (o === t)
   }
 
@@ -55,26 +55,26 @@ class TestDynamicJsonSerializer extends FlatSpec with Matchers {
   }
 
   "Json " should " serialize dynamic Lst" in {
-    val t = Lst(Seq(Number(1),Number(2),Text("ha"),null))
+    val t = Lst(Seq(Number(1),Number(2),Text("ha"),Null))
     val str = t.toJson
     assert (str === "[1,2,\"ha\",null]")
   }
 
   "Json " should " deserialize dynamic Lst" in {
     val o = "[1,2,\"ha\",null]".parseJson[Value]
-    val t = Lst(Seq(Number(1),Number(2),Text("ha"),null))
+    val t = Lst(Seq(Number(1),Number(2),Text("ha"),Null))
     assert (o === t)
   }
 
   "Json " should " serialize dynamic Obj" in {
-    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->null))
+    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->Null))
     val str = t.toJson
     assert (str === """{"a":1,"b":"ha","c":null}""")
   }
 
   "Json " should " deserialize dynamic Obj" in {
     val o = """{"a":1,"b":"ha","c":null}""".parseJson[Value]
-    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->null))
+    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->Null))
     assert (o === t)
   }
 }
