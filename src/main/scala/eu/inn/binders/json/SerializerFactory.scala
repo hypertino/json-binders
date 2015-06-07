@@ -4,7 +4,7 @@ import java.io.{OutputStream, InputStream, ByteArrayOutputStream}
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonParser, JsonGenerator}
 import eu.inn.binders.core.{Deserializer, Serializer}
-import eu.inn.binders.naming.{PlainConverter, Converter}
+import eu.inn.binders.naming.{Converter, PlainConverter}
 
 trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]] {
   val jf = new JsonFactory()
@@ -38,6 +38,8 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
     val ba = new ByteArrayOutputStream()
     try {
       val jg = jf.createGenerator(ba, encoding)
+      if (prettyPrint)
+        jg.useDefaultPrettyPrinter()
       try {
         val js = createSerializer(jg)
         codeBlock(js)
@@ -71,9 +73,12 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
   def encoding = JsonEncoding.UTF8
   def createSerializer(jsonGenerator: JsonGenerator): S
   def createDeserializer(jsonParser: JsonParser): D
+  def prettyPrint: Boolean = false
 }
 
-class DefaultSerializerFactory[C <: Converter] extends SerializerFactory[C, JsonSerializer[C], JsonDeserializer[C]] {
+class DefaultSerializerFactory[C <: Converter](override val prettyPrint: Boolean)
+  extends SerializerFactory[C, JsonSerializer[C], JsonDeserializer[C]]{
+  def this() = this(false)
   override def createSerializer(jsonGenerator: JsonGenerator): JsonSerializer[C] = new JsonSerializer[C](jsonGenerator)
   override def createDeserializer(jsonParser: JsonParser): JsonDeserializer[C] = new JsonDeserializer[C](jsonParser)
 }
