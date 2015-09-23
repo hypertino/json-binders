@@ -11,10 +11,12 @@ private [json] trait JsonMacroImpl {
   import c.universe._
 
   def parseJson[O: c.WeakTypeTag]: c.Tree = {
+    val t = fresh("t")
+    val d = fresh("d")
     val block = q"""{
-      val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStringParser[${weakTypeOf[O]}](t.jsonString) { deserializer=>
-        deserializer.unbind[${weakTypeOf[O]}]
+      val $t = ${c.prefix.tree}
+      SerializerFactory.findFactory().withStringParser[${weakTypeOf[O]}]($t.jsonString) { case ($d) =>
+        $d.unbind[${weakTypeOf[O]}]
       }
     }"""
     //println(block)
@@ -22,10 +24,12 @@ private [json] trait JsonMacroImpl {
   }
 
   def toJson[O: c.WeakTypeTag]: c.Tree = {
+    val t = fresh("t")
+    val s = fresh("s")
     val block = q"""{
-      val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStringGenerator { serializer=>
-        serializer.bind[${weakTypeOf[O]}](t.obj)
+      val $t = ${c.prefix.tree}
+      SerializerFactory.findFactory().withStringGenerator { case ($s) =>
+        $s.bind[${weakTypeOf[O]}]($t.obj)
       }
     }"""
     //println(block)
@@ -33,10 +37,12 @@ private [json] trait JsonMacroImpl {
   }
 
   def readJson[O: c.WeakTypeTag]: c.Tree = {
+    val t = fresh("t")
+    val d = fresh("d")
     val block = q"""{
-      val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStreamParser[${weakTypeOf[O]}](t.inputStream) { deserializer=>
-        deserializer.unbind[${weakTypeOf[O]}]
+      val $t = ${c.prefix.tree}
+      SerializerFactory.findFactory().withStreamParser[${weakTypeOf[O]}]($t.inputStream) { case ($d) =>
+        $d.unbind[${weakTypeOf[O]}]
       }
     }"""
     //println(block)
@@ -44,13 +50,17 @@ private [json] trait JsonMacroImpl {
   }
 
   def writeJson[O: c.WeakTypeTag](outputStream: c.Expr[OutputStream]): c.Tree = {
+    val t = fresh("t")
+    val s = fresh("s")
     val block = q"""{
-      val t = ${c.prefix.tree}
-      SerializerFactory.findFactory().withStreamGenerator($outputStream) { serializer=>
-        serializer.bind[${weakTypeOf[O]}](t.obj)
+      val $t = ${c.prefix.tree}
+      SerializerFactory.findFactory().withStreamGenerator($outputStream) { case ($s) =>
+        $s.bind[${weakTypeOf[O]}]($t.obj)
       }
     }"""
     //println(block)
     block
   }
+
+  def fresh(prefix: String): TermName = newTermName(c.fresh(prefix))
 }

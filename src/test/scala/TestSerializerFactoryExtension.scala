@@ -25,7 +25,7 @@ class SerializerFactoryEx[C <: Converter] extends SerializerFactory[C, JsonSeria
   def createDeserializer(jsonParser: JsonParser): JsonDeserializerEx[C] = new JsonDeserializerEx[C](jsonParser)
 }
 
-class TestSerializerExtension extends FlatSpec with Matchers {
+class TestSerializerFactoryExtension extends FlatSpec with Matchers {
 
   import eu.inn.binders.json._
 
