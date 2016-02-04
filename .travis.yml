@@ -1,6 +1,7 @@
 language: scala
 scala:
 - 2.11.6
+sudo: false
 env:
   global:
   - secure: UYLCY9QUIWRq+hlq8e+X1zyiOrnZig1IqVveBhwDFT9C83k7KkndeUW8smeMKaJO+0XqqlgPFgzN2MnfUPFpMDVYfyW/bQjaSFm93kT8W7+9MpV4oGgnLysDiuvqLmnNuqZ2Ixptlt2/qiV4pzRY67xDufoqQXwtVi5XlFzjEf0=

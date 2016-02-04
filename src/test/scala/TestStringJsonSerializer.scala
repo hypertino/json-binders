@@ -67,12 +67,15 @@ class TestStringJsonSerializer extends FlatSpec with Matchers {
     assert (o2 === t2)
   }
 
+  "Json " should " deserialize empty array if no field is found" in {
+    val o = """{}""".parseJson[TestStringArray]
+    val t = TestStringArray(Seq.empty)
+    assert (o === t)
+  }
+
   "Json " should " throw exception if fieldname doesn't match" in {
     intercept[FieldNotFoundException] {
       """{"wrongFieldName":"abc"}""".parseJson[TestString]
-    }
-    intercept[FieldNotFoundException] {
-      """{"wrongFieldName":"abc"}""".parseJson[TestStringArray]
     }
   }
 }
