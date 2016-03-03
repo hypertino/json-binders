@@ -1,6 +1,6 @@
 name := "binders-json"
 
-version := "0.6"
+version := "0.7"
 
 organization := "eu.inn"
 
@@ -16,7 +16,7 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
 
-libraryDependencies += "eu.inn" %% "binders-core" % "0.10.72"
+libraryDependencies += "eu.inn" %% "binders-core" % "0.11.74"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
@@ -28,7 +28,7 @@ libraryDependencies := {
     // in Scala 2.10, quasiquotes are provided by macro paradise
     case Some((2, 10)) =>
       libraryDependencies.value ++ Seq(
-        compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
-        "org.scalamacros" %% "quasiquotes" % "2.1.0-M5" cross CrossVersion.binary)
+        compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
+        "org.scalamacros" %% "quasiquotes" % "2.1.0" cross CrossVersion.binary)
   }
 }
