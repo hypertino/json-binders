@@ -16,7 +16,7 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
 
-libraryDependencies += "eu.inn" %% "binders-core" % "0.11.74"
+libraryDependencies += "eu.inn" %% "binders-core" % "0.11.75"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 

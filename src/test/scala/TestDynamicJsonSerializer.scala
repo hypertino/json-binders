@@ -74,7 +74,7 @@ class TestDynamicJsonSerializer extends FlatSpec with Matchers {
 
   "Json " should " deserialize dynamic Obj" in {
     val o = """{"a":1,"b":"ha","c":null}""".parseJson[Value]
-    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->Null))
+    val t = ObjV("a" -> 1,"b"->"ha","c"->Null)
     assert (o === t)
   }
 }
