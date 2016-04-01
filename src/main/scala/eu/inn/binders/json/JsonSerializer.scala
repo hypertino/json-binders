@@ -4,7 +4,7 @@ import java.util.Date
 
 import com.fasterxml.jackson.core.JsonGenerator
 import eu.inn.binders.core.Serializer
-import eu.inn.binders.dynamic._
+import eu.inn.binders.value._
 import eu.inn.binders.naming.Converter
 import scala.language.experimental.macros
 
@@ -48,7 +48,7 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
     if (value == null)
       writeNull()
     else
-      value.accept(new ValueVisitor[Unit] {
+      value ~~ new ValueVisitor[Unit] {
         override def visitNumber(d: Number) = writeBigDecimal(d.v)
         override def visitBool(d: Bool) = writeBoolean(d.v)
         override def visitObj(d: Obj) = {
@@ -65,7 +65,7 @@ class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected (val json
           endArray()
         }
         override def visitNull() = writeNull()
-      })
+      }
   }
 }
 

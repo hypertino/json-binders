@@ -4,7 +4,7 @@ import java.util.Date
 
 import com.fasterxml.jackson.core.{JsonToken, JsonParser}
 import eu.inn.binders.core.Deserializer
-import eu.inn.binders.dynamic.Value
+import eu.inn.binders.value.Value
 import eu.inn.binders.naming.Converter
 import scala.collection.mutable.ArrayBuffer
 import scala.language.experimental.macros
@@ -76,7 +76,7 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
   def readDate(): Date = new Date(jsonParser.getLongValue)
 
   def readValue(): Value = {
-    import eu.inn.binders.dynamic._
+    import eu.inn.binders.value._
     jsonParser.getCurrentToken() match {
       case JsonToken.VALUE_NULL => Null
       case JsonToken.VALUE_TRUE => Bool(true)

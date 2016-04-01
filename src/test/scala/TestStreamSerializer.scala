@@ -1,7 +1,7 @@
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
-import eu.inn.binders.dynamic._
+import eu.inn.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 class TestStreamSerializer extends FlatSpec with Matchers {

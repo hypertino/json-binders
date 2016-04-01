@@ -1,5 +1,5 @@
 
-import eu.inn.binders.dynamic._
+import eu.inn.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 class TestDynamicJsonSerializer extends FlatSpec with Matchers {

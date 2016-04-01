@@ -1,24 +1,23 @@
 name := "binders-json"
 
-version := "0.7"
+version := "0.12"
 
 organization := "eu.inn"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.11.7", "2.10.5")
+crossScalaVersions := Seq("2.11.8", "2.10.6")
 
 resolvers ++= Seq(
     Resolver.sonatypeRepo("public")
   )
 
-libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
-
-libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4"
-
-libraryDependencies += "eu.inn" %% "binders-core" % "0.11.77"
-
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+libraryDependencies ++= Seq(
+  "eu.inn" %% "binders-core" % "0.12.85",
+  "com.fasterxml.jackson.core" % "jackson-core" % "2.7.3",
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+  "org.mockito" % "mockito-all" % "1.10.19" % "test"
+)
 
 libraryDependencies := {
   CrossVersion.partialVersion(scalaVersion.value) match {
