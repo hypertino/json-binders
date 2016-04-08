@@ -13,7 +13,7 @@ resolvers ++= Seq(
   )
 
 libraryDependencies ++= Seq(
-  "eu.inn" %% "binders-core" % "0.12.85",
+  "eu.inn" %% "binders-core" % "0.12.89",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.7.3",
   "org.scalatest" %% "scalatest" % "2.2.6" % "test",
   "org.mockito" % "mockito-all" % "1.10.19" % "test"
