@@ -7,7 +7,7 @@
 Serialize/deserialize Scala case classes to JSON
 
 A plain example how-to use a library:
-```
+```scala
 case class TestClass(
   intValue: Int,
   longOption: Option[Long],
@@ -23,7 +23,6 @@ val obj = TestClass(100500,None,"John")
 val json = obj.toJson // serialize to JSON string
 
 val obj2 = json.parseJson[TestClass] // deserialize JSON string to case class
-  
 ```
 
 
