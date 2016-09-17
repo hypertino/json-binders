@@ -1,8 +1,7 @@
 
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
-import eu.inn.binders.core.{ImplicitDeserializer, ImplicitSerializer}
-import eu.inn.binders.json._
-import eu.inn.binders.naming.{Converter, PlainConverter}
+import com.hypertino.binders.core.{ImplicitDeserializer, ImplicitSerializer}
+import com.hypertino.binders.json.{JsonDeserializer, JsonSerializer}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ExtraDataTypeSerializer extends ImplicitSerializer[ExtraDataType, JsonSerializer[_]] {
@@ -15,7 +14,7 @@ class ExtraDataTypeDeserializer extends ImplicitDeserializer[ExtraDataType, Json
 
 class TestSerializerTypeExtension extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   implicit val serializer = new ExtraDataTypeSerializer
   implicit val deserializer = new ExtraDataTypeDeserializer

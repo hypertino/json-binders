@@ -7,7 +7,7 @@ case class TestDoubleArrayN(doubleArrayN: Seq[Option[Double]])
 
 class TestDoubleJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with Double" in {
     val t = TestDouble(1234.567)

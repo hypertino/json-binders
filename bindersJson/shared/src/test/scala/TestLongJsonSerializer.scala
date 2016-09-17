@@ -8,7 +8,7 @@ case class TestLongArrayN(longArrayN: Seq[Option[Long]])
 
 class TestLongJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with Long" in {
     val t = TestLong(1234)

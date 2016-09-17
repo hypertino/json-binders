@@ -1,12 +1,11 @@
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
-import eu.inn.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 class TestStreamSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize to OutputStream" in {
     val ba = new ByteArrayOutputStream()

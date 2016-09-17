@@ -7,7 +7,7 @@ case class TestFloatArrayN(floatArrayN: Seq[Option[Float]])
 
 class TestFloatJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with Float" in {
     val t = TestFloat(1234.567f)

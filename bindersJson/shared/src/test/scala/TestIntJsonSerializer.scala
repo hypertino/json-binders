@@ -1,6 +1,7 @@
 
-import eu.inn.binders.core.BindOptions
-import eu.inn.binders.naming.PlainConverter
+import com.hypertino.binders.core.BindOptions
+import com.hypertino.binders.json.DefaultSerializerFactory
+import com.hypertino.inflector.naming.PlainConverter
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestInt(intVal: Int)
@@ -10,7 +11,7 @@ case class TestIntArrayN(intArrayN: Seq[Option[Int]])
 
 class TestIntJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with Int" in {
     val t = TestInt(1234)
@@ -66,7 +67,7 @@ class TestIntJsonSerializer extends FlatSpec with Matchers {
   }
 
   "Json " should " pretty print" in {
-    implicit val defaultSerializerFactory = new DefaultSerializerFactory[PlainConverter](true)
+    implicit val defaultSerializerFactory = new DefaultSerializerFactory[PlainConverter.type](true)
     val t3 = TestIntN(Some(1234), None)
     val str3 = t3.toJson
     assert(str3 === """{

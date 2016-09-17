@@ -1,12 +1,12 @@
 
-import eu.inn.binders.value._
+import com.hypertino.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 case class Mixed(a: Int, b: String, extra: Value)
 
 class TestMixJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize Mixed" in {
 

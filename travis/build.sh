@@ -2,12 +2,13 @@
 set -e
 
 if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" ]]; then
-  if grep version "build.sbt" | grep -q "\-SNAPSHOT"; then
-    sbt +test +publish
+  echo "$key_password" | gpg --passphrase-fd 0 ./travis/ht-oss-public.asc.gpg
+  echo "$key_password" | gpg --passphrase-fd 0 ./travis/ht-oss-private.asc.gpg
+
+  if grep "version\s*:=.*SNAPSHOT" build.sbt; then
+    sbt +test +publishSigned
   else
-    openssl aes-256-cbc -k "$key_password" -in ./travis/inn-oss-public.enc -out ./inn-oss-public.asc -d
-    openssl aes-256-cbc -k "$key_password" -in ./travis/inn-oss-private.enc -out ./inn-oss-private.asc -d
-    sbt 'set version := version.value + "." + System.getenv("TRAVIS_BUILD_NUMBER")' +test +publishSigned sonatypeReleaseAll
+    sbt +test +publishSigned sonatypeReleaseAll
   fi
 else
   sbt +test

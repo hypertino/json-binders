@@ -1,7 +1,7 @@
 
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
-import eu.inn.binders.json._
-import eu.inn.binders.naming.{Converter, PlainConverter}
+import com.hypertino.binders.json.{JsonDeserializerBase, JsonSerializerBase, SerializerFactory}
+import com.hypertino.inflector.naming.{Converter, PlainConverter}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ExtraDataType(val v: String)
@@ -27,31 +27,31 @@ class SerializerFactoryEx[C <: Converter] extends SerializerFactory[C, JsonSeria
 
 class TestSerializerFactoryExtension extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize extra data" in {
-    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter.type]
     val t = new ExtraDataType("ha")
     val str = t.toJson
     assert (str === "\"-ha-\"")
   }
 
   "Json " should " deserialize extra data" in {
-    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter.type]
     val o = """"ha"""".parseJson[ExtraDataType]
     val t = new ExtraDataType("ha")
     assert (o.v === t.v)
   }
 
   "Json " should " serialize extra data inside class" in {
-    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter.type]
     val t = InnerWithExtraData(new ExtraDataType("ha"))
     val str = t.toJson
     assert (str === "{\"extra\":\"-ha-\"}")
   }
 
   "Json " should " deserialize extra data to class" in {
-    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter]
+    implicit val serializerFactory = new SerializerFactoryEx[PlainConverter.type]
     val o = "{\"extra\":\"ha\"}".parseJson[InnerWithExtraData]
     val t = InnerWithExtraData(new ExtraDataType("ha"))
     assert (o.extra.v === t.extra.v)

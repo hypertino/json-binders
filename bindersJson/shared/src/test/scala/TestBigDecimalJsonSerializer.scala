@@ -1,5 +1,3 @@
-
-import eu.inn.binders.core.BindOptions
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestBigDecimal(bigdecimalVal: BigDecimal)
@@ -9,7 +7,7 @@ case class TestBigDecimalArrayN(bigdecimalArrayN: Seq[Option[BigDecimal]])
 
 class TestBigDecimalJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with BigDecimal" in {
     val t = TestBigDecimal(

@@ -1,12 +1,11 @@
 
-import eu.inn.binders.naming.CamelCaseToSnakeCaseConverter
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestStringMap1(map: Map[String, String])
 case class TestStringMap2(map: Map[String, TestInt])
 
 class TestMapSerializer extends FlatSpec with Matchers {
-   import eu.inn.binders.json._
+   import com.hypertino.binders.json._
 
   "Json " should " serialize map[String,String]" in {
     val t: Map[String, String] = Map("a" -> "1", "b" ->"2")

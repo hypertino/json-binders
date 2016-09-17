@@ -1,5 +1,5 @@
 
-import eu.inn.binders.core.FieldNotFoundException
+import com.hypertino.binders.core.FieldNotFoundException
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestString(stringVal: String)
@@ -9,7 +9,7 @@ case class TestStringArrayN(stringArrayN: Seq[Option[String]])
 
 class TestStringJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with String" in {
     val t = TestString("abc")

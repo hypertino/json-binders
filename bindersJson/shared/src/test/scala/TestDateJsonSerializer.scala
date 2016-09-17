@@ -10,7 +10,7 @@ case class TestDateArrayN(dateArrayN: Seq[Option[Date]])
 
 class TestDateJsonSerializer extends FlatSpec with Matchers with BeforeAndAfter {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   before {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))

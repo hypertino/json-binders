@@ -1,10 +1,10 @@
 
-import eu.inn.binders.value._
+import com.hypertino.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 class TestDynamicJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize dynamic null" in {
     val t: Value = null

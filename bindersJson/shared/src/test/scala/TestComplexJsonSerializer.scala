@@ -1,5 +1,4 @@
 
-import eu.inn.binders.naming.CamelCaseToSnakeCaseConverter
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestComplex(
@@ -13,7 +12,7 @@ case class TestComplex(
 
 class TestComplexJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize complex class" in {
     val t = TestComplex(

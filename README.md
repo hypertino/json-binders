@@ -1,12 +1,12 @@
 # binders-json
 
-[![Build Status](https://travis-ci.org/InnovaCo/binders-json.svg?branch=master)](https://travis-ci.org/InnovaCo/binders-json)
+[![Build Status](https://travis-ci.org/hypertino/binders-json.svg?branch=master)](https://travis-ci.org/hypertino/binders-json)
 
-[ Latest Releases ](https://oss.sonatype.org/#nexus-search;gav~eu.inn~binders-json_*~~~)
+[ Latest Releases ](https://oss.sonatype.org/#nexus-search;gav~com.hypertino~binders-json_*~~~)
 
 Serialize/deserialize Scala case classes to JSON
 
-A plain example how-to use a library:
+A plain example on how-to use a library:
 ```scala
 case class TestClass(
   intValue: Int,

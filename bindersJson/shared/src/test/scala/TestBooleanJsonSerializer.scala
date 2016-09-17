@@ -8,7 +8,7 @@ case class TestBooleanArrayN(booleanArrayN: Seq[Option[Boolean]])
 
 class TestBooleanJsonSerializer extends FlatSpec with Matchers {
 
-  import eu.inn.binders.json._
+  import com.hypertino.binders.json._
 
   "Json " should " serialize class with Boolean" in {
     val t = TestBoolean(booleanVal = true)
