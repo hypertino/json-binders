@@ -1,5 +1,3 @@
-
-import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
 import com.hypertino.binders.core.{ImplicitDeserializer, ImplicitSerializer}
 import com.hypertino.binders.json.{JsonDeserializer, JsonSerializer}
 import org.scalatest.{FlatSpec, Matchers}

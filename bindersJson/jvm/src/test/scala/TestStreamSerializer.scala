@@ -1,4 +1,3 @@
-
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import org.scalatest.{FlatSpec, Matchers}
@@ -22,3 +21,4 @@ class TestStreamSerializer extends FlatSpec with Matchers {
     i should equal(55667)
   }
 }
+

@@ -4,15 +4,18 @@ import java.io.{ByteArrayOutputStream, InputStream, OutputStream}
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonGenerator, JsonParser}
 import com.hypertino.binders.core.{Deserializer, Serializer}
+import com.hypertino.binders.json.api.{JsonGeneratorApi, JsonParserApi, SerializerFactoryApi}
 import com.hypertino.inflector.naming.{Converter, PlainConverter}
 
-trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]] {
+trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]]
+  extends SerializerFactoryApi[C, S, D] {
+
   val jf = new JsonFactory()
 
   def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T = {
     val jp = jf.createParser(jsonString)
     try {
-      val jds = createDeserializer(jp)
+      val jds = createDeserializer(new JacksonParserAdapter(jp))
       codeBlock(jds)
     } finally {
       jp.close()
@@ -20,14 +23,14 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
   }
 
   def withJsonParser[T](jsonParser: JsonParser)(codeBlock: D ⇒ T): T = {
-    val jds = createDeserializer(jsonParser)
+    val jds = createDeserializer(new JacksonParserAdapter(jsonParser))
     codeBlock(jds)
   }
 
   def withStreamParser[T](inputStream: InputStream)(codeBlock: D ⇒ T): T = {
     val jp = jf.createParser(inputStream)
     try {
-      val jds = createDeserializer(jp)
+      val jds = createDeserializer(new JacksonParserAdapter(jp))
       codeBlock(jds)
     } finally {
       jp.close()
@@ -41,7 +44,7 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
       if (prettyPrint)
         jg.useDefaultPrettyPrinter()
       try {
-        val js = createSerializer(jg)
+        val js = createSerializer(new JacksonGeneratorAdapter(jg))
         codeBlock(js)
       }
       finally {
@@ -57,7 +60,7 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
   def withStreamGenerator(outputStream: OutputStream)(codeBlock: S ⇒ Unit): Unit = {
     val jg = jf.createGenerator(outputStream, encoding)
     try {
-      val js = createSerializer(jg)
+      val js = createSerializer(new JacksonGeneratorAdapter(jg))
       codeBlock(js)
     }
     finally {
@@ -66,25 +69,20 @@ trait SerializerFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]
   }
 
   def withJsonGenerator(outputGenerator: JsonGenerator)(codeBlock: S ⇒ Unit): Unit = {
-    val js = createSerializer(outputGenerator)
+    val js = createSerializer(new JacksonGeneratorAdapter(outputGenerator))
     codeBlock(js)
   }
 
   def encoding = JsonEncoding.UTF8
-  def createSerializer(jsonGenerator: JsonGenerator): S
-  def createDeserializer(jsonParser: JsonParser): D
+  def createSerializer(jsonGenerator: JsonGeneratorApi): S
+  def createDeserializer(jsonParser: JsonParserApi): D
   def prettyPrint: Boolean = false
 }
 
-class DefaultSerializerFactory[C <: Converter](override val prettyPrint: Boolean)
-  extends SerializerFactory[C, JsonSerializer[C], JsonDeserializer[C]]{
-  def this() = this(false)
-  override def createSerializer(jsonGenerator: JsonGenerator): JsonSerializer[C] = new JsonSerializer[C](jsonGenerator)
-  override def createDeserializer(jsonParser: JsonParser): JsonDeserializer[C] = new JsonDeserializer[C](jsonParser)
-}
+
 
 object SerializerFactory {
   implicit val defaultSerializerFactory = new DefaultSerializerFactory[PlainConverter.type]
   def findFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]]()
-  (implicit factory: SerializerFactory[C, S, D]): SerializerFactory[C, S, D] = factory
+    (implicit factory: SerializerFactory[C, S, D]): SerializerFactory[C, S, D] = factory
 }

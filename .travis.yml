@@ -2,10 +2,22 @@ language: scala
 scala:
 - 2.11.6
 sudo: false
+script: "$TRAVIS_BUILD_DIR/travis/build.sh"
+jdk:
+- oraclejdk8
+addons:
+  apt:
+    packages:
+    - oracle-java8-installer
+cache:
+  directories:
+  - "$HOME/.m2"
+  - "$HOME/.ivy2"
+  - "$HOME/.sbt"
 env:
   global:
   - secure: ZtZuQthVRi36b0tvUdmGCjsOgVSgziYXw2r8dMYQmufcQXmLA9KgKDLb6eltF+CXRWq/R/xEO5WG2TMrlAATIwOX0hptwajvS8McXCGVemGEwc1Bx9wM+2HOgJBlYoMC/Ssbv6h8i97Jhe+2drDssvG5orgCnzLoyu2SKstk024=
   - secure: e53U4m+hkHJzdueDP+6L0xrFNz5Ocy2VG+AqaqCeSkfFIzcK8GTVnwwCnOeHKDxvbaNaeQXMVmTk7TyE6gGrIEqASjOBw9WmvxUzbmHh8MjZX12xFC2tmT/rqEJ6l7K/6QWFltPGmOIYnbTjz/+I9c8ad8MVXO+KMGX2dIeSY58=
   - secure: DiZyuW13NC5t8Rl8yq8e+VnYa6pIQrHj7tk9VvbN7tzy4GPYGEaBMbWSXNrFFSPbS4wmm/VJaT+YbbB2AgTh80w1Azatp/DxeBG75aaea/5XF1jgN+WCtrjLRy30txF5mqv0+NRJ5XGeY7qzBp0z6mDjwQetXU65TLNsEYMCzHY=
   - secure: Lro7pf88Gbw+itQM9WhAzoD0ZybaNN2K8fleCKSOTd3zmpbFbkvnLi34OErbcoSsGxX3t0xlghty0ZZEERIHD3uJ6TyQMYrecF56hOPAItpEDtueZ+jNbC/DRaxL3IEg0attyqEG19dI0vOQlraa8WY2LKJ5OCixZRKjjE9r7yw=
-script: $TRAVIS_BUILD_DIR/travis/build.sh
+

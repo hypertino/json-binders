@@ -2,7 +2,7 @@
 import com.hypertino.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
-class TestDynamicJsonSerializer extends FlatSpec with Matchers {
+class TestValueJsonSerializer extends FlatSpec with Matchers {
 
   import com.hypertino.binders.json._
 

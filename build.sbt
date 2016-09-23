@@ -31,8 +31,7 @@ lazy val bindersJson = crossProject.settings(publishSettings:_*).settings(
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-core" % "2.7.3",
-      "org.mockito" % "mockito-all" % "1.10.19" % "test"
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.7.3"
     )
   )
 

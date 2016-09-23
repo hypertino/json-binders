@@ -1,9 +1,7 @@
 package com.hypertino.binders.json
 
-import java.util.Date
-
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.hypertino.binders.core.Deserializer
+import com.hypertino.binders.json.api._
 import com.hypertino.binders.value.{Bool, Lst, Null, Number, Obj, Text, Value}
 import com.hypertino.inflector.naming.Converter
 
@@ -12,27 +10,27 @@ import scala.language.experimental.macros
 
 class JsonDeserializeException(message: String) extends RuntimeException(message)
 
-class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: JsonParser, val moveToNextToken: Boolean, val fieldName: Option[String])
+class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: JsonParserApi, val moveToNextToken: Boolean, val fieldName: Option[String])
   extends Deserializer[C] {
 
-  val currentToken = if (moveToNextToken) nextToken() else jsonParser.getCurrentToken
+  val currentToken: JsToken = if (moveToNextToken) nextToken() else jsonParser.currentToken
 
   def iterator(): Iterator[I] = {
-    if (currentToken == JsonToken.START_ARRAY) {
+    if (currentToken == JsStartArray) {
       createArrayIterator
     }
-    else if (currentToken == JsonToken.START_OBJECT) {
+    else if (currentToken == JsStartObject) {
       createObjectIterator
     }
     else
       throw new JsonDeserializeException("Couldn't iterate nonarray/nonobject field. Current token: " + currentToken)
   }
 
-  protected def createArrayIterator: Iterator[I] = new PrefetchIterator(JsonToken.END_ARRAY, false)
+  protected def createArrayIterator: Iterator[I] = new PrefetchIterator(JsEndArray, false)
 
-  protected def createObjectIterator: Iterator[I] = new PrefetchIterator(JsonToken.END_OBJECT, true)
+  protected def createObjectIterator: Iterator[I] = new PrefetchIterator(JsEndObject, true)
 
-  protected class PrefetchIterator(endToken: JsonToken, moveToNextTokenForChildren: Boolean) extends Iterator[I] {
+  protected class PrefetchIterator(endToken: JsToken, moveToNextTokenForChildren: Boolean) extends Iterator[I] {
     var _hasNext = true
     var _moveNext = true
     nextIfNeeded()
@@ -45,66 +43,83 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
     override def next(): I = {
       nextIfNeeded()
       _moveNext = true
-      createFieldDeserializer(jsonParser, moveToNextTokenForChildren, Some(jsonParser.getCurrentName))
+      createFieldDeserializer(jsonParser, moveToNextTokenForChildren, jsonParser.fieldName)
     }
 
     def nextIfNeeded(): Unit = {
       if (_moveNext && _hasNext) {
         nextToken()
         _moveNext = false
-        _hasNext = jsonParser.getCurrentToken != endToken
+        _hasNext = jsonParser.currentToken != endToken
       }
     }
   }
 
-  protected def createFieldDeserializer(jsonParser: JsonParser, moveToNextToken: Boolean, fieldName: Option[String]): I = ??? //new JsonDeserializer[C](jsonNode, fieldName)
+  protected def createFieldDeserializer(jsonParser: JsonParserApi, moveToNextToken: Boolean, fieldName: Option[String]): I = ??? //new JsonDeserializer[C](jsonNode, fieldName)
 
   protected def nextToken() = {
     val token = jsonParser.nextToken()
     if (token == null)
-      throw new JsonDeserializeException("Unexpected token: " + token + " offset: " + jsonParser.getTokenLocation)
+      throw new JsonDeserializeException("Unexpected token: " + token + " offset: " + jsonParser.location)
     token
   }
 
-  def isNull: Boolean = jsonParser.getCurrentToken == JsonToken.VALUE_NULL
-  def readString(): String = jsonParser.getText
-  def readInt(): Int = jsonParser.getIntValue
-  def readLong(): Long = jsonParser.getLongValue
-  def readDouble(): Double = jsonParser.getDoubleValue
-  def readFloat(): Float = jsonParser.getDoubleValue.toFloat
-  def readBoolean(): Boolean = jsonParser.getBooleanValue
-  def readBigDecimal(): BigDecimal = JsonDeserializer.stringToBigDecimal(jsonParser.getText)
-  def readDate(): Date = new Date(jsonParser.getLongValue)
+  def isNull: Boolean = jsonParser.currentToken == JsNull
+
+  private def optional[T](f : () ⇒ T): Option[T] = {
+    if (currentToken == JsNull)
+      None
+    else
+      Some(f())
+  }
+
+  def readStringOption(): Option[String] = optional(readString)
+  def readString(): String = jsonParser.stringValue
+  def readIntOption(): Option[Int] = optional(readInt)
+  def readInt(): Int = jsonParser.numberValue.toInt
+  def readLongOption(): Option[Long] = optional(readLong)
+  def readLong(): Long = jsonParser.numberValue.toLong
+  def readDoubleOption(): Option[Double] = optional(readDouble)
+  def readDouble(): Double = jsonParser.numberValue.toDouble
+  def readFloatOption(): Option[Float] = optional(readFloat)
+  def readFloat(): Float = jsonParser.numberValue.toFloat
+  def readBooleanOption(): Option[Boolean] = optional(readBoolean)
+  def readBoolean(): Boolean = currentToken match {
+    case JsTrue ⇒ true
+    case JsFalse ⇒ false
+    case other ⇒ throw new JsonDeserializeException(s"Can't be read Boolean from '$currentToken'")
+  }
+  def readBigDecimalOption(): Option[BigDecimal] = optional(readBigDecimal)
+  def readBigDecimal(): BigDecimal = jsonParser.numberValue
 
   def readValue(): Value = {
-    jsonParser.getCurrentToken() match {
-      case JsonToken.VALUE_NULL => Null
-      case JsonToken.VALUE_TRUE => Bool(true)
-      case JsonToken.VALUE_FALSE => Bool(false)
-      case JsonToken.VALUE_STRING => Text(jsonParser.getText)
-      case JsonToken.VALUE_NUMBER_INT => Number(jsonParser.getDecimalValue)
-      case JsonToken.VALUE_NUMBER_FLOAT => Number(jsonParser.getDecimalValue)
-      case JsonToken.START_OBJECT => {
+    jsonParser.currentToken match {
+      case JsNull => Null
+      case JsTrue => Bool(true)
+      case JsFalse => Bool(false)
+      case JsString => Text(jsonParser.stringValue)
+      case JsNumber => Number(jsonParser.numberValue)
+      case JsStartObject =>
         var map = new scala.collection.mutable.HashMap[String, Value]()
         iterator().foreach(i => {
           val d = i.asInstanceOf[JsonDeserializerBase[_,_]]
           map += d.fieldName.get -> d.readValue()
         })
         Obj(map.toMap)
-      }
-      case JsonToken.START_ARRAY => {
+
+      case JsStartArray =>
         val array = new ArrayBuffer[Value]()
         iterator().foreach(i => array += i.asInstanceOf[JsonDeserializerBase[_,_]].readValue())
         Lst(array)
-      }
-      case _ => throw new JsonDeserializeException(s"Can't deserialize token: ${jsonParser.getCurrentToken} at ${jsonParser.getCurrentLocation}")
+
+      case _ => throw new JsonDeserializeException(s"Can't deserialize token: ${jsonParser.currentToken} at ${jsonParser.location}")
     }
   }
 }
 
-class JsonDeserializer[C <: Converter] (jsonParser: JsonParser, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None)
+class JsonDeserializer[C <: Converter] (jsonParser: JsonParserApi, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None)
   extends JsonDeserializerBase[C, JsonDeserializer[C]](jsonParser, moveToNextToken, fieldName) {
-  protected override def createFieldDeserializer(jsonParser: JsonParser, moveToNextToken: Boolean, fieldName: Option[String]): JsonDeserializer[C] = new JsonDeserializer[C](jsonParser, moveToNextToken, fieldName)
+  protected override def createFieldDeserializer(jsonParser: JsonParserApi, moveToNextToken: Boolean, fieldName: Option[String]): JsonDeserializer[C] = new JsonDeserializer[C](jsonParser, moveToNextToken, fieldName)
 }
 
 object JsonDeserializer {

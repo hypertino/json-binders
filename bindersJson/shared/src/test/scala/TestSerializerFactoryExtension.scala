@@ -1,5 +1,4 @@
-
-import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
+import com.hypertino.binders.json.api.{JsonGeneratorApi, JsonParserApi}
 import com.hypertino.binders.json.{JsonDeserializerBase, JsonSerializerBase, SerializerFactory}
 import com.hypertino.inflector.naming.{Converter, PlainConverter}
 import org.scalatest.{FlatSpec, Matchers}
@@ -7,22 +6,22 @@ import org.scalatest.{FlatSpec, Matchers}
 class ExtraDataType(val v: String)
 case class InnerWithExtraData(extra: ExtraDataType)
 
-class JsonSerializerEx[C <: Converter](jsonGenerator: JsonGenerator) extends JsonSerializerBase[C, JsonSerializerEx[C]](jsonGenerator) {
+class JsonSerializerEx[C <: Converter](jsonGenerator: JsonGeneratorApi) extends JsonSerializerBase[C, JsonSerializerEx[C]](jsonGenerator) {
   protected override def createFieldSerializer() = new JsonSerializerEx[C](jsonGenerator)
 
   def writeExtraDataType(value: ExtraDataType): Unit = jsonGenerator.writeString("-" + value.v + "-")
 }
 
-class JsonDeserializerEx[C <: Converter] (jsonParser: JsonParser, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None) extends JsonDeserializerBase[C, JsonDeserializerEx[C]](jsonParser, moveToNextToken, fieldName) {
+class JsonDeserializerEx[C <: Converter] (jsonParser: JsonParserApi, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None) extends JsonDeserializerBase[C, JsonDeserializerEx[C]](jsonParser, moveToNextToken, fieldName) {
 
-  protected override def createFieldDeserializer(jsonParser: JsonParser, moveToNextToken: Boolean, fieldName: Option[String]) = new JsonDeserializerEx[C](jsonParser, moveToNextToken, fieldName)
+  protected override def createFieldDeserializer(jsonParser: JsonParserApi, moveToNextToken: Boolean, fieldName: Option[String]) = new JsonDeserializerEx[C](jsonParser, moveToNextToken, fieldName)
 
-  def readExtraDataType() : ExtraDataType = new ExtraDataType(jsonParser.getValueAsString)
+  def readExtraDataType() : ExtraDataType = new ExtraDataType(jsonParser.stringValue)
 }
 
 class SerializerFactoryEx[C <: Converter] extends SerializerFactory[C, JsonSerializerEx[C], JsonDeserializerEx[C]] {
-  def createSerializer(jsonGenerator: JsonGenerator): JsonSerializerEx[C] = new JsonSerializerEx[C](jsonGenerator)
-  def createDeserializer(jsonParser: JsonParser): JsonDeserializerEx[C] = new JsonDeserializerEx[C](jsonParser)
+  def createSerializer(jsonGenerator: JsonGeneratorApi): JsonSerializerEx[C] = new JsonSerializerEx[C](jsonGenerator)
+  def createDeserializer(jsonParser: JsonParserApi): JsonDeserializerEx[C] = new JsonDeserializerEx[C](jsonParser)
 }
 
 class TestSerializerFactoryExtension extends FlatSpec with Matchers {
@@ -57,3 +56,4 @@ class TestSerializerFactoryExtension extends FlatSpec with Matchers {
     assert (o.extra.v === t.extra.v)
   }
 }
+

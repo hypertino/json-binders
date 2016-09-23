@@ -22,9 +22,9 @@ class TestDoubleJsonSerializer extends FlatSpec with Matchers {
   }
 
   "Json " should " serialize class with array of Double" in {
-    val t = TestDoubleArray(List(1.5,2,3))
+    val t = TestDoubleArray(List(1.5,2.1,3.4))
     val str = t.toJson
-    assert (str === """{"doubleArray":[1.5,2.0,3.0]}""")
+    assert (str === """{"doubleArray":[1.5,2.1,3.4]}""")
   }
 
   "Json " should " deserialize class with array of Double" in {
@@ -34,9 +34,9 @@ class TestDoubleJsonSerializer extends FlatSpec with Matchers {
   }
 
   "Json " should " serialize class with array of Option[Double]" in {
-    val t = TestDoubleArrayN(List(Some(1.5),None,Some(3)))
+    val t = TestDoubleArrayN(List(Some(1.5),None,Some(3.4)))
     val str = t.toJson
-    assert (str === """{"doubleArrayN":[1.5,null,3.0]}""")
+    assert (str === """{"doubleArrayN":[1.5,null,3.4]}""")
   }
 
   "Json " should " deserialize class with array of Option[Double]" in {
@@ -46,12 +46,12 @@ class TestDoubleJsonSerializer extends FlatSpec with Matchers {
   }
 
   "Json " should " serialize class with Nullable Double" in {
-    val t = TestDoubleN(Some(1234.567), Some(456))
+    val t = TestDoubleN(Some(1234.567), Some(456.4))
     val str = t.toJson
-    assert (str === """{"doubleValN1":1234.567,"doubleValN2":456.0}""")
+    assert (str === """{"doubleValN1":1234.567,"doubleValN2":456.4}""")
 
-    val t2 = TestDoubleN(Some(1234),None)
+    val t2 = TestDoubleN(Some(1234.2),None)
     val str2 = t2.toJson
-    assert (str2 === """{"doubleValN1":1234.0,"doubleValN2":null}""")
+    assert (str2 === """{"doubleValN1":1234.2,"doubleValN2":null}""")
   }
 }

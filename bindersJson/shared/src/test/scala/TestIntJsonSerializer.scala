@@ -66,7 +66,7 @@ class TestIntJsonSerializer extends FlatSpec with Matchers {
     assert(str3 === """{"intValN1":1234}""")
   }
 
-  "Json " should " pretty print" in {
+  ignore should " pretty print" in {
     implicit val defaultSerializerFactory = new DefaultSerializerFactory[PlainConverter.type](true)
     val t3 = TestIntN(Some(1234), None)
     val str3 = t3.toJson

@@ -1,5 +1,5 @@
-
 import org.scalatest.{FlatSpec, Matchers}
+
 case class TestFloat(floatVal: Float)
 case class TestFloatN(floatValN1: Option[Float], floatValN2: Option[Float])
 case class TestFloatArray(floatArray: Seq[Float])

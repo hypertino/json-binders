@@ -6,31 +6,13 @@ import scala.language.experimental.macros
 import scala.language.reflectiveCalls
 import scala.reflect.macros.Context
 
-private [json] object JsonMacro {
-  def parseJson[O: c.WeakTypeTag]
-    (c: Context): c.Expr[O] = {
-    val c0: c.type = c
-    val bundle = new {
-      val c: c0.type = c0
-    } with JsonMacroImpl
-    c.Expr[O](bundle.parseJson[O])
-  }
-
-  def toJson[O: c.WeakTypeTag]
-    (c: Context): c.Expr[String] = {
-    val c0: c.type = c
-    val bundle = new {
-      val c: c0.type = c0
-    } with JsonMacroImpl
-    c.Expr[String](bundle.toJson[O])
-  }
-
+private [json] object JsonMacroJvm {
   def readJson[O: c.WeakTypeTag]
   (c: Context): c.Expr[O] = {
     val c0: c.type = c
     val bundle = new {
       val c: c0.type = c0
-    } with JsonMacroImpl
+    } with JsonMacroImplJvm
     c.Expr[O](bundle.readJson[O])
   }
 
@@ -39,7 +21,7 @@ private [json] object JsonMacro {
     val c0: c.type = c
     val bundle = new {
       val c: c0.type = c0
-    } with JsonMacroImpl
+    } with JsonMacroImplJvm
     c.Expr[Unit](bundle.writeJson[O](outputStream))
   }
 }
