@@ -1,13 +1,17 @@
+import sbt.Keys._
+
 name := "binders-json"
 
+version in Global := "1.0-SNAPSHOT"
+
 crossScalaVersions := Seq("2.11.8"/*, "2.10.6"*/)
+
+scalaVersion in Global := "2.11.8"
 
 organization in Global := "com.hypertino"
 
 lazy val bindersJson = crossProject.settings(publishSettings:_*).settings(
     name := "binders-json",
-    version := "1.0-SNAPSHOT",
-    scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
       "com.hypertino" %%% "binders" % "1.0-SNAPSHOT",
       "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
@@ -38,6 +42,37 @@ lazy val bindersJson = crossProject.settings(publishSettings:_*).settings(
 lazy val js = bindersJson.js
 
 lazy val jvm = bindersJson.jvm
+
+lazy val benchTest = crossProject.dependsOn(bindersJson).enablePlugins(JmhPlugin).settings(
+  name := "bench-test",
+  libraryDependencies ++= Seq(
+    "com.lihaoyi" %%% "upickle" % "0.4.1",
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value
+  ) ++ {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, 10)) =>
+        Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
+          "org.scalamacros" %% "quasiquotes" % "2.1.0" cross CrossVersion.binary)
+      case _ ⇒ Seq.empty
+    }
+  },
+  publishArtifact := false,
+  publishArtifact in Test := false,
+  publish := (),
+  publishLocal := (),
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("public")
+  )
+)
+  .jsSettings(
+  )
+  .jvmSettings(
+  )
+
+lazy val benchTestJS = benchTest.js
+
+lazy val benchTestJVM = benchTest.jvm
+
 
 val publishSettings = Seq(
   pomExtra := <url>https://github.com/hypertino/binders-json</url>
@@ -93,3 +128,4 @@ publishArtifact := false
 publish := ()
 
 publishLocal := ()
+

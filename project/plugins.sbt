@@ -4,4 +4,5 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "1.1")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.12")
 
-addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.2.10")
+addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.2.15")
+
