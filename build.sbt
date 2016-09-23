@@ -65,6 +65,8 @@ lazy val benchTest = crossProject.dependsOn(bindersJson).enablePlugins(JmhPlugin
   )
 )
   .jsSettings(
+    scalaJSStage in Global := FullOptStage,
+    scalaJSUseRhino in Global := false
   )
   .jvmSettings(
   )

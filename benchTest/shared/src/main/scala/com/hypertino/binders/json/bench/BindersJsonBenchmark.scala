@@ -20,32 +20,15 @@ class BindersJsonBenchmark{
   //println(b2Str)
 
   @Benchmark
-  def Binders_serializeCaseClassWithInnerArray(): Int = {
-    val str = b2.toJson
-    str.parseJson[Bench2CaseClass].i
-  }
-
-  @Benchmark
-  def Binders_serializeAndDeserializeCaseClassWithInnerArray(): Int = {
-    val str = b2.toJson
-    str.length
-  }
-
-  @Benchmark
-  def Binders_deserializeCaseClassWithInnerArray(): Int = {
-    b2Str.parseJson[Bench2CaseClass].i
-  }
-
-  @Benchmark
   def Binders_serializeCaseClass(): Int = {
     val str = b1.toJson
-    str.parseJson[Bench1CaseClass].b
+    str.length
   }
 
   @Benchmark
   def Binders_serializeAndDeserializeCaseClass(): Int = {
     val str = b1.toJson
-    str.length
+    str.parseJson[Bench1CaseClass].b
   }
 
   @Benchmark
@@ -53,40 +36,57 @@ class BindersJsonBenchmark{
     b1Str.parseJson[Bench1CaseClass].b
   }
 
-  import upickle.default._
-
   @Benchmark
-  def Upickle_serializeCaseClassWithInnerArray(): Int = {
-    val str = write(b2)
-    read[Bench2CaseClass](str).i
-  }
-
-  @Benchmark
-  def Upickle_serializeAndDeserializeCaseClassWithInnerArray(): Int = {
-    val str = write(b2)
+  def Binders_serializeCaseClass2(): Int = {
+    val str = b2.toJson
     str.length
   }
 
   @Benchmark
-  def Upickle_deserializeCaseClassWithInnerArray(): Int = {
-    read[Bench2CaseClass](b2Str).i
+  def Binders_serializeAndDeserializeCaseClass2(): Int = {
+    val str = b2.toJson
+    str.parseJson[Bench2CaseClass].i
   }
+
+  @Benchmark
+  def Binders_deserializeCaseClass2(): Int = {
+    b2Str.parseJson[Bench2CaseClass].i
+  }
+
+  import upickle.default._
 
   @Benchmark
   def Upickle_serializeCaseClass(): Int = {
     val str = write(b1)
-    read[Bench1CaseClass](str).b
+    str.length
   }
 
   @Benchmark
   def Upickle_serializeAndDeserializeCaseClass(): Int = {
     val str = write(b1)
-    str.length
+    read[Bench1CaseClass](str).b
   }
 
   @Benchmark
   def Upickle_deserializeCaseClass(): Int = {
     read[Bench1CaseClass](b1Str).b
+  }
+
+  @Benchmark
+  def Upickle_serializeCaseClass2(): Int = {
+    val str = write(b2)
+    str.length
+  }
+
+  @Benchmark
+  def Upickle_serializeAndDeserializeCaseClass2(): Int = {
+    val str = write(b2)
+    read[Bench2CaseClass](str).i
+  }
+
+  @Benchmark
+  def Upickle_deserializeCaseClass2(): Int = {
+    read[Bench2CaseClass](b2Str).i
   }
 
   def rstr(len: Int = 16) = rand.alphanumeric.take(len).mkString
