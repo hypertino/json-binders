@@ -117,8 +117,7 @@ val publishSettings = Seq(
   }
 )
 
-
-credentials ++= (for {
+credentials in Global ++= (for {
   username <- Option(System.getenv().get("sonatype_username"))
   password <- Option(System.getenv().get("sonatype_password"))
 } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
@@ -126,10 +125,10 @@ credentials ++= (for {
 
 publishArtifact in Test := false
 
-publishArtifact := false
+publishArtifact in Global := false
 
-publish := ()
+publish in Global := ()
 
-publishLocal := ()
+publishLocal in Global := ()
 
 scalacOptions in Global ++= Seq("-feature", "-deprecation")
