@@ -6,6 +6,7 @@ import com.hypertino.binders.value.{Bool, Lst, Null, Number, Obj, Text, Value}
 import com.hypertino.inflector.naming.Converter
 
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.duration._
 import scala.language.experimental.macros
 
 class JsonDeserializeException(message: String) extends RuntimeException(message)
@@ -91,6 +92,10 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
   }
   def readBigDecimalOption(): Option[BigDecimal] = optional(readBigDecimal)
   def readBigDecimal(): BigDecimal = jsonParser.numberValue
+  def readFiniteDuration(): FiniteDuration = jsonParser.numberValue.toLong.milliseconds
+  def readFiniteDurationOption(): Option[FiniteDuration] = optional(readFiniteDuration)
+  def readDuration(): Duration = Duration(jsonParser.stringValue)
+  def readDurationOption: Option[Duration] = optional(readDuration)
 
   def readValue(): Value = {
     jsonParser.currentToken match {

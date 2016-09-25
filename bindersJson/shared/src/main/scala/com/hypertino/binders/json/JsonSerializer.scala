@@ -5,6 +5,7 @@ import com.hypertino.binders.json.api.JsonGeneratorApi
 import com.hypertino.binders.value.{Bool, Lst, Number, Obj, Text, Value, ValueVisitor}
 import com.hypertino.inflector.naming.Converter
 
+import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.language.experimental.macros
 
 class JsonSerializeException(message: String) extends RuntimeException(message)
@@ -26,6 +27,17 @@ abstract class JsonSerializerBase[C <: Converter, F <: Serializer[C]] protected 
   def writeDouble(value: Double): Unit = jsonGenerator.writeDouble(value)
   def writeBoolean(value: Boolean): Unit = jsonGenerator.writeBoolean(value)
   def writeBigDecimal(value: BigDecimal): Unit = jsonGenerator.writeBigDecimal(value.bigDecimal)
+  def writeFiniteDuration(value: FiniteDuration): Unit = jsonGenerator.writeLong(value.toMillis)
+  def writeDuration(value: Duration): Unit = {
+    val s = value.toString
+    val s2 = if (s.startsWith("Duration.")) {
+      s.substring(9)
+    }
+    else {
+      s
+    }
+    jsonGenerator.writeString(s2)
+  }
 
   def beginObject(): Unit = {
     jsonGenerator.writeStartObject()
