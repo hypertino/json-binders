@@ -1,8 +1,9 @@
-[![Build Status](https://travis-ci.org/hypertino/binders-json.svg)](https://travis-ci.org/hypertino/binders-json)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hypertino/binders-json_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.hypertino/binders-json_2.11)
-[ Latest Releases ](https://oss.sonatype.org/#nexus-search;gav~com.hypertino~binders-json_*~~~)
+[![Build Status](https://travis-ci.org/hypertino/json-binders.svg)](https://travis-ci.org/hypertino/json-binders)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hypertino/json-binders_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.hypertino/json-binders_2.11)
 
-# binders-json
+[ Latest releases and snapshots](https://oss.sonatype.org/#nexus-search;gav~com.hypertino~json-binders_*~~~)
+
+# json-binders
 
 Serialize/deserialize Scala case classes to JSON
 

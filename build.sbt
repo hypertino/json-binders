@@ -1,7 +1,5 @@
 import sbt.Keys._
 
-name := "binders-json"
-
 version in Global := "1.0-SNAPSHOT"
 
 crossScalaVersions := Seq("2.11.8", "2.10.6")
@@ -10,8 +8,8 @@ scalaVersion in Global := "2.11.8"
 
 organization in Global := "com.hypertino"
 
-lazy val bindersJson = crossProject.settings(publishSettings:_*).settings(
-    name := "binders-json",
+lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
+    name := "json-binders",
     libraryDependencies ++= Seq(
       "com.hypertino" %%% "binders" % "1.0-SNAPSHOT",
       "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
@@ -39,11 +37,11 @@ lazy val bindersJson = crossProject.settings(publishSettings:_*).settings(
     )
   )
 
-lazy val js = bindersJson.js
+lazy val js = jsonBinders.js
 
-lazy val jvm = bindersJson.jvm
+lazy val jvm = jsonBinders.jvm
 
-lazy val benchTest = crossProject.dependsOn(bindersJson).enablePlugins(JmhPlugin).settings(
+lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin).settings(
   name := "bench-test",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "upickle" % "0.4.1",
@@ -78,7 +76,7 @@ lazy val benchTestJVM = benchTest.jvm
 
 
 val publishSettings = Seq(
-  pomExtra := <url>https://github.com/hypertino/binders-json</url>
+  pomExtra := <url>https://github.com/hypertino/json-binders</url>
     <licenses>
       <license>
         <name>BSD-style</name>
@@ -87,8 +85,8 @@ val publishSettings = Seq(
       </license>
     </licenses>
     <scm>
-      <url>git@github.com:hypertino/binders-json.git</url>
-      <connection>scm:git:git@github.com:hypertino/binders-json.git</connection>
+      <url>git@github.com:hypertino/json-binders.git</url>
+      <connection>scm:git:git@github.com:hypertino/json-binders.git</connection>
     </scm>
     <developers>
       <developer>

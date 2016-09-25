@@ -8,7 +8,7 @@ object BenchTest extends JSApp {
   val TEST_TIME = 10000 // ms
 
   def run(iteration: String): Unit = {
-    val cls = new BindersJsonBenchmark
+    val cls = new JsonBindersBenchmark
     import cls._
     println(s"Iteration: $iteration")
     measure("Binders_serializeCaseClass2", Binders_serializeCaseClass2)
