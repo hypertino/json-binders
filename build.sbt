@@ -4,7 +4,7 @@ name := "binders-json"
 
 version in Global := "1.0-SNAPSHOT"
 
-crossScalaVersions := Seq("2.11.8"/*, "2.10.6"*/)
+crossScalaVersions := Seq("2.11.8", "2.10.6")
 
 scalaVersion in Global := "2.11.8"
 
@@ -66,7 +66,8 @@ lazy val benchTest = crossProject.dependsOn(bindersJson).enablePlugins(JmhPlugin
 )
   .jsSettings(
     scalaJSStage in Global := FullOptStage,
-    scalaJSUseRhino in Global := false
+    scalaJSUseRhino := false,
+    scalaJSUseRhino in Test := true
   )
   .jvmSettings(
   )
@@ -131,3 +132,4 @@ publish := ()
 
 publishLocal := ()
 
+scalacOptions in Global ++= Seq("-feature", "-deprecation")

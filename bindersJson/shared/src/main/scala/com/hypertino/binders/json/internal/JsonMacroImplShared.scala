@@ -1,18 +1,17 @@
 package com.hypertino.binders.json.internal
 
+import com.hypertino.binders.util.MacroAdapter
+import MacroAdapter.Context
 import scala.language.experimental.macros
-import scala.language.reflectiveCalls
-import scala.reflect.macros.Context
 
-private [json] trait JsonMacroImplShared {
-  val c: Context
-  import c.universe._
+private [json] trait JsonMacroImplShared extends MacroAdapter[Context]{
+  import ctx.universe._
 
-  def parseJson[O: c.WeakTypeTag]: c.Tree = {
-    val t = fresh("t")
-    val d = fresh("d")
+  def parseJson[O: WeakTypeTag]: Tree = {
+    val t = freshTerm("t")
+    val d = freshTerm("d")
     val block = q"""{
-      val $t = ${c.prefix.tree}
+      val $t = ${ctx.prefix.tree}
       SerializerFactory.findFactory().withStringParser[${weakTypeOf[O]}]($t.jsonString) { case ($d) =>
         $d.unbind[${weakTypeOf[O]}]
       }
@@ -21,11 +20,11 @@ private [json] trait JsonMacroImplShared {
     block
   }
 
-  def toJson[O: c.WeakTypeTag]: c.Tree = {
-    val t = fresh("t")
-    val s = fresh("s")
+  def toJson[O: WeakTypeTag]: Tree = {
+    val t = freshTerm("t")
+    val s = freshTerm("s")
     val block = q"""{
-      val $t = ${c.prefix.tree}
+      val $t = ${ctx.prefix.tree}
       SerializerFactory.findFactory().withStringGenerator { case ($s) =>
         $s.bind[${weakTypeOf[O]}]($t.obj)
       }
@@ -33,6 +32,4 @@ private [json] trait JsonMacroImplShared {
     //println(block)
     block
   }
-
-  def fresh(prefix: String): TermName = newTermName(c.fresh(prefix))
 }

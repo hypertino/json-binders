@@ -1,7 +1,7 @@
 package com.hypertino.binders.json.bench
 
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
-
+import scala.language.postfixOps
 import scala.util.Random
 
 case class Bench1CaseClass(a: String, b: Int, d: Double, an: Option[String], bn: Option[Int], dn: Option[Double])

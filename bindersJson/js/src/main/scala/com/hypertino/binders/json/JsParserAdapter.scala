@@ -100,7 +100,7 @@ class JsParserAdapter(value: Any) extends JsonParserApi {
         _currentToken = JsFalse
       case null =>
         _currentToken = JsNull
-      case s: js.Array[_] =>
+      case s: js.Array[Any] @unchecked =>
         _currentToken = JsStartArray
         _currentIterator = Some(JsParserArrayIterator(s, 0))
       case s: js.Object =>
@@ -134,7 +134,7 @@ case class JsParserObjectIterator(obj: Vector[(String, Any)], index: Int) extend
   def fieldName: String = obj(index)._1
 }
 
-case class JsParserArrayIterator(arr: js.Array[_], index: Int) extends JsParserIterator {
+case class JsParserArrayIterator(arr: js.Array[Any], index: Int) extends JsParserIterator {
   override def isEof: Boolean = index >= arr.size
   override def advance(): JsParserIterator = copy(arr, index+1)
   override def currentValue: Any = arr(index)
