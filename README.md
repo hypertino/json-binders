@@ -5,6 +5,8 @@
 
 # json-binders
 
+[![Join the chat at https://gitter.im/Hypertino/json-binders](https://badges.gitter.im/Hypertino/json-binders.svg)](https://gitter.im/Hypertino/json-binders?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Serialize/deserialize Scala case classes to JSON
 
 A plain example on how-to use a library:
