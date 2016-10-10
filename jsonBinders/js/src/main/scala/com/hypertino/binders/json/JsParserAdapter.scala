@@ -102,16 +102,20 @@ class JsParserAdapter(value: Any) extends JsonParserApi {
         _currentToken = JsNull
       case s: js.Array[Any] @unchecked =>
         _currentToken = JsStartArray
-        _currentIterator = Some(JsParserArrayIterator(s, 0))
+        _currentIterator = Some(new JsParserArrayIterator(s))
       case s: js.Object =>
         _currentToken = JsStartObject
-        _currentIterator = Some(JsParserObjectIterator(s.asInstanceOf[js.Dictionary[_]].toVector, 0))
+        _currentIterator = Some(new JsParserObjectIterator(s.asInstanceOf[js.Object with js.Dynamic]))
     }
     it.foreach { previousIterator ⇒
-      if (_currentIterator.isDefined)
-        iteratorStack.push(previousIterator.advance())
-      else
-        _currentIterator = Some(previousIterator.advance())
+      if (_currentIterator.isDefined) {
+        previousIterator.advance()
+        iteratorStack.push(previousIterator)
+      }
+      else {
+        previousIterator.advance()
+        _currentIterator = Some(previousIterator)
+      }
     }
     if (_currentIterator.isEmpty) {
       isEof = true
@@ -121,22 +125,31 @@ class JsParserAdapter(value: Any) extends JsonParserApi {
 
 sealed trait JsParserIterator {
   def currentValue: Any
-  def advance(): JsParserIterator
+  def advance(): Unit
   def isEof: Boolean
 }
-case class JsParserObjectIterator(obj: Vector[(String, Any)], index: Int) extends JsParserIterator {
-  override def isEof: Boolean = index >= obj.size
-  override def advance(): JsParserIterator = copy(obj, index+1)
-  override def currentValue: Any = obj(index)._2
+class JsParserObjectIterator(obj: js.Object with js.Dynamic) extends JsParserIterator {
+  private val properties = js.Object.keys(obj)
+  private var index = 0
+
+  override def isEof: Boolean = index >= properties.size
+  override def advance(): Unit = {
+    index += 1
+  }
+  override def currentValue: Any = obj.selectDynamic(fieldName)
   override def toString = {
     if (isEof) "{}" else s"{$fieldName}"
   }
-  def fieldName: String = obj(index)._1
+  def fieldName: String = properties(index)
 }
 
-case class JsParserArrayIterator(arr: js.Array[Any], index: Int) extends JsParserIterator {
+class JsParserArrayIterator(arr: js.Array[Any]) extends JsParserIterator {
+  private var index = 0
+
   override def isEof: Boolean = index >= arr.size
-  override def advance(): JsParserIterator = copy(arr, index+1)
+  override def advance(): Unit = {
+    index += 1
+  }
   override def currentValue: Any = arr(index)
   override def toString = {
     if (isEof) "[]" else s"[$index]"

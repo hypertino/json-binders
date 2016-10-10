@@ -2,42 +2,45 @@ import com.hypertino.binders.core.{ImplicitDeserializer, ImplicitSerializer}
 import com.hypertino.binders.json.{JsonBinders, JsonDeserializer, JsonSerializer}
 import org.scalatest.{FlatSpec, Matchers}
 
-class ExtraDataTypeSerializer extends ImplicitSerializer[ExtraDataType, JsonSerializer[_]] {
+class CustomDataTypeSerializer extends ImplicitSerializer[ExtraDataType, JsonSerializer[_]] {
   override def write(serializer: JsonSerializer[_], value: ExtraDataType): Unit = serializer.writeString("-" + value.v + "-")
 }
 
-class ExtraDataTypeDeserializer extends ImplicitDeserializer[ExtraDataType, JsonDeserializer[_]] {
+class CustomDataTypeDeserializer extends ImplicitDeserializer[ExtraDataType, JsonDeserializer[_]] {
   override def read(deserializer: JsonDeserializer[_]): ExtraDataType = new ExtraDataType(deserializer.readString())
+}
+
+object CustomDataJsonBinders {
+  implicit val serializer = new CustomDataTypeSerializer
+  implicit val deserializer = new CustomDataTypeDeserializer
 }
 
 class TestSerializerTypeExtension extends FlatSpec with Matchers {
 
   import JsonBinders._
+  import CustomDataJsonBinders._
 
-  implicit val serializer = new ExtraDataTypeSerializer
-  implicit val deserializer = new ExtraDataTypeDeserializer
-
-  "Json " should " serialize extra data type" in {
+  it should " serialize extra data type" in {
     val t = new ExtraDataType("ha")
     val str = t.toJson
-    assert (str === "\"-ha-\"")
+    str shouldBe "\"-ha-\""
   }
 
-  "Json " should " deserialize extra data type" in {
+  it should " deserialize extra data type" in {
     val o = """"ha"""".parseJson[ExtraDataType]
     val t = new ExtraDataType("ha")
-    assert (o.v === t.v)
+    o.v shouldBe t.v
   }
 
-  "Json " should " serialize extra data type inside class" in {
+  it should " serialize extra data type inside class" in {
     val t = InnerWithExtraData(new ExtraDataType("ha"))
     val str = t.toJson
-    assert (str === "{\"extra\":\"-ha-\"}")
+    str shouldBe "{\"extra\":\"-ha-\"}"
   }
 
-  "Json " should " deserialize extra data type to class" in {
+  it should " deserialize extra data type to class" in {
     val o = "{\"extra\":\"ha\"}".parseJson[InnerWithExtraData]
     val t = InnerWithExtraData(new ExtraDataType("ha"))
-    assert (o.extra.v === t.extra.v)
+    o.extra.v shouldBe t.extra.v
   }
 }
