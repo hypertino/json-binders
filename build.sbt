@@ -37,9 +37,39 @@ lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
     )
   )
 
-lazy val js = jsonBinders.js
+lazy val jsonBindersJS = jsonBinders.js
 
-lazy val jvm = jsonBinders.jvm
+lazy val jsonBindersJVM = jsonBinders.jvm
+
+lazy val jsonTimeBinders = crossProject.dependsOn(jsonBinders).settings(publishSettings:_*).settings(
+  name := "json-time-binders",
+  libraryDependencies ++= Seq(
+    "io.github.soc" %%% "scala-java-time" % "2.0.0-M3",
+    "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
+    "com.hypertino" %%% "scalamock-scalatest-support" % "3.4-SNAPSHOT" % "test",
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value
+  ) ++ {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, 10)) =>
+        Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
+          "org.scalamacros" %% "quasiquotes" % "2.1.0" cross CrossVersion.binary)
+      case _ ⇒ Seq.empty
+    }
+  },
+  publishArtifact := true,
+  publishArtifact in Test := false,
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("public")
+  )
+)
+  .jsSettings(
+  )
+  .jvmSettings(
+  )
+
+lazy val jsonTimeBindersJS = jsonTimeBinders.js
+
+lazy val jsonTimeBindersJVM = jsonTimeBinders.jvm
 
 lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin).settings(
   name := "bench-test",
