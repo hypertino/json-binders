@@ -6,10 +6,10 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" ]]; then
   echo "$key_password" | gpg --passphrase-fd 0 ./travis/ht-oss-private.asc.gpg
 
   if grep "version\s*:=.*SNAPSHOT" build.sbt; then
-    sbt +jsonBindersJVM/test +jsonBindersJS/test +jsonTimeBindersJVM/test +jsonTimeBindersJS/test +jsonBindersJVM/publishSigned +jsonBindersJS/publishSigned +jsonTimeBindersJVM/publishSigned +jsonTimeBindersJS/publishSigned
+    sbt 'alias testPublish =; jsonBindersJVM/test; jsonBindersJS/test; jsonTimeBindersJVM/test; jsonTimeBindersJS/test; jsonBindersJVM/publishSigned; jsonBindersJS/publishSigned; jsonTimeBindersJVM/publishSigned; jsonTimeBindersJS/publishSigned' +testPublish
   else
-    sbt +jsonBindersJVM/test +jsonBindersJS/test +jsonTimeBindersJVM/test +jsonTimeBindersJS/test +jsonBindersJVM/publishSigned +jsonBindersJS/publishSigned +jsonTimeBindersJVM/publishSigned +jsonTimeBindersJS/publishSigned sonatypeReleaseAll
+    sbt 'alias testPublish =; jsonBindersJVM/test; jsonBindersJS/test; jsonTimeBindersJVM/test; jsonTimeBindersJS/test; jsonBindersJVM/publishSigned; jsonBindersJS/publishSigned; jsonTimeBindersJVM/publishSigned; jsonTimeBindersJS/publishSigned' +testPublish sonatypeReleaseAll
   fi
 else
-  sbt +jsonBindersJVM/test +jsonBindersJS/test +jsonTimeBindersJVM/test +jsonTimeBindersJS/test
+  sbt 'alias testAll =; jsonBindersJVM/test; jsonBindersJS/test; jsonTimeBindersJVM/test; jsonTimeBindersJS/test' +testAll
 fi
