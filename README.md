@@ -246,6 +246,12 @@ Upickle_serializeAndDeserializeCaseClass2                1610.0759 ops/sec. 1166
 Upickle_serializeAndDeserializeCaseClass2NoOption        2022.3135 ops/sec. 14773 cnt for 7305 ms
 ```
 
+# Additional serializers
+
+[soc-time](https://github.com/soc/scala-java-time) is a Scala.JS compatible Java8 time implementation.
+
+Add to project with SBT: `"com.hypertino" %% "json-time-binders" % "1.0-SNAPSHOT"`. See an example in [TestInstantSerializer.scala](jsonTimeBinders/shared/src/test/scala/TestInstantSerializer.scala)
+
 # Things to cover
 
 - naming convention converters;
