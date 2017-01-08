@@ -98,9 +98,9 @@ lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin
   .jvmSettings(
   )
 
-lazy val benchTestJS = benchTest.js
-
-lazy val benchTestJVM = benchTest.jvm
+//lazy val benchTestJS = benchTest.js
+//
+//lazy val benchTestJVM = benchTest.jvm
 
 
 val publishSettings = Seq(
