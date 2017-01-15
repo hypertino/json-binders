@@ -1,5 +1,7 @@
 package com.hypertino.binders.json
 
+import java.io.{Reader, Writer}
+
 import com.hypertino.binders.core.{Deserializer, Serializer}
 import com.hypertino.binders.json.api.{JsonBindersFactoryApi, JsonGeneratorApi, JsonParserApi}
 import com.hypertino.inflector.naming.{Converter, PlainConverter}
@@ -10,10 +12,22 @@ import scala.scalajs.js.JSON
 trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]]
   extends JsonBindersFactoryApi[C, S, D] {
 
-  def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T = {
+  override def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T = {
     val adapter = new JsParserAdapter(JSON.parse(jsonString))
     val jds = createDeserializer(adapter)
     codeBlock(jds)
+  }
+
+  override def withReader[T](reader: Reader)(codeBlock: (D) ⇒ T): T = {
+    val stringBuilder = new StringBuilder
+    val len = 256
+    val buffer = new Array[Char](len)
+    var readed = len
+    while (readed == len) {
+      readed = reader.read(buffer, 0, len)
+      stringBuilder.append(buffer, 0, readed)
+    }
+    withStringParser(stringBuilder.toString())(codeBlock)
   }
 
   def withJsonObjectParser[T](jsonObject: js.Dynamic)(codeBlock: D ⇒ T): T = {
@@ -22,12 +36,8 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
     codeBlock(jds)
   }
 
-  def withStringGenerator(codeBlock: S ⇒ Unit): String = {
-    val sb = new StringBuilder
-    val generator = new JsGeneratorAdapter(sb)
-    val js = createSerializer(generator)
-    codeBlock(js)
-    sb.toString
+  override def withWriter(writer: Writer)(codeBlock: S ⇒ Unit): Unit = {
+    codeBlock(createSerializer(new JsGeneratorAdapter(writer)))
   }
 
   def createSerializer(jsonGenerator: JsonGeneratorApi): S
