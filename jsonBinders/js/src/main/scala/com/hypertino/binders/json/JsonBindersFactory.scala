@@ -31,18 +31,12 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
   }
 
   def withJsonObjectParser[T](jsonObject: js.Dynamic)(codeBlock: D ⇒ T): T = {
-    val adapter = new JsParserAdapter(jsonObject)
-    val jds = createDeserializer(adapter)
-    codeBlock(jds)
+    withJsonParserApi(new JsParserAdapter(jsonObject))(codeBlock)
   }
 
   override def withWriter(writer: Writer)(codeBlock: S ⇒ Unit): Unit = {
-    codeBlock(createSerializer(new JsGeneratorAdapter(writer)))
+    withJsonGeneratorApi(new JsGeneratorAdapter(writer))(codeBlock)
   }
-
-  def createSerializer(jsonGenerator: JsonGeneratorApi): S
-  def createDeserializer(jsonParser: JsonParserApi): D
-  def prettyPrint: Boolean = false
 }
 
 object JsonBindersFactory {

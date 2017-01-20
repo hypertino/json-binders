@@ -6,6 +6,9 @@ import com.hypertino.binders.core.{Deserializer, Serializer}
 import com.hypertino.inflector.naming.Converter
 
 trait JsonBindersFactoryApi[C <: Converter, S <: Serializer[C], D <: Deserializer[C]] {
+  def createSerializer(jsonGenerator: JsonGeneratorApi): S
+  def createDeserializer(jsonParser: JsonParserApi): D
+  def prettyPrint: Boolean = false
 
   def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T  = {
     val reader = new StringReader(jsonString)
@@ -24,6 +27,16 @@ trait JsonBindersFactoryApi[C <: Converter, S <: Serializer[C], D <: Deserialize
       writer.close()
     }
     writer.toString
+  }
+
+  def withJsonParserApi[T](jsonParserApi: JsonParserApi)(codeBlock: D ⇒ T): T = {
+    val jds = createDeserializer(jsonParserApi)
+    codeBlock(jds)
+  }
+
+  def withJsonGeneratorApi(jsonGeneratorApi: JsonGeneratorApi)(codeBlock: S ⇒ Unit): Unit = {
+    val js = createSerializer(jsonGeneratorApi)
+    codeBlock(js)
   }
 
   def withReader[T](reader: Reader)(codeBlock: D ⇒ T): T
