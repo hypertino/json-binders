@@ -4,6 +4,7 @@ import com.hypertino.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 class TestValueJsonSerializer extends FlatSpec with Matchers {
+  import ValueBinders._
   import JsonBinders._
 
   it should " serialize dynamic null" in {

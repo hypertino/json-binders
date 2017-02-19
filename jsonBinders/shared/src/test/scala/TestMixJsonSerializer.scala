@@ -6,7 +6,7 @@ import org.scalatest.{FlatSpec, Matchers}
 case class Mixed(a: Int, b: String, extra: Value)
 
 class TestMixJsonSerializer extends FlatSpec with Matchers {
-
+  import ValueBinders._
   import JsonBinders._
 
   "Json " should " serialize Mixed" in {
