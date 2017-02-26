@@ -184,7 +184,7 @@ case class Crocodile(
 import com.hypertino.binders.json.JsonBinders._
 
 val crocodileJson = Crocodile("Gena", Some("Green"), 
-  ObjV("country" -> "Russia", "age" -> 49) // this constructs Obj type for extra field
+  Obj.from("country" -> "Russia", "age" -> 49) // this constructs Obj type for extra field
 ).toJson
 
 // crocodileJson: String = {"name":"Gena","color":"Green","extra":{"country":"Russia","age":49}}

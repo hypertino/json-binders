@@ -4,7 +4,6 @@ import com.hypertino.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
 
 class TestValueJsonSerializer extends FlatSpec with Matchers {
-  import ValueBinders._
   import JsonBinders._
 
   it should " serialize dynamic null" in {
@@ -56,26 +55,26 @@ class TestValueJsonSerializer extends FlatSpec with Matchers {
   }
 
   it should " serialize dynamic Lst" in {
-    val t = Lst(Seq(Number(1),Number(2),Text("ha"),Null))
+    val t = Lst.from(1,2,"ha",Null)
     val str = t.toJson
     assert (str === "[1,2,\"ha\",null]")
   }
 
   it should " deserialize dynamic Lst" in {
     val o = "[1,2,\"ha\",null]".parseJson[Value]
-    val t = Lst(Seq(Number(1),Number(2),Text("ha"),Null))
+    val t = Lst.from(1,2,"ha",Null)
     assert (o === t)
   }
 
   it should " serialize dynamic Obj" in {
-    val t = Obj(Map("a" -> Number(1),"b"->Text("ha"),"c"->Null))
+    val t = Obj.from("a" -> Number(1),"b"->Text("ha"),"c"->Null)
     val str = t.toJson
     assert (str === """{"a":1,"b":"ha","c":null}""")
   }
 
   it should " deserialize dynamic Obj" in {
     val o = """{"a":1,"b":"ha","c":null}""".parseJson[Value]
-    val t = ObjV("a" -> 1,"b"->"ha","c"->Null)
+    val t = Obj.from("a" -> 1,"b"->"ha","c"->Null)
     assert (o === t)
   }
 }

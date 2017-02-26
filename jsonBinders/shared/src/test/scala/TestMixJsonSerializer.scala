@@ -6,12 +6,11 @@ import org.scalatest.{FlatSpec, Matchers}
 case class Mixed(a: Int, b: String, extra: Value)
 
 class TestMixJsonSerializer extends FlatSpec with Matchers {
-  import ValueBinders._
   import JsonBinders._
 
   "Json " should " serialize Mixed" in {
 
-    val t = Mixed(1, "ha", ObjV(
+    val t = Mixed(1, "ha", Obj.from(
       "f" -> 555
     ))
     val str = t.toJson
@@ -20,7 +19,7 @@ class TestMixJsonSerializer extends FlatSpec with Matchers {
 
   "Json " should " deserialize Mixed" in {
     val o = """{"a":1,"b":"ha","extra":{"f":555}}""".parseJson[Mixed]
-    val t = Mixed(1, "ha", ObjV(
+    val t = Mixed(1, "ha", Obj.from(
       "f" -> 555
     ))
     assert (o === t)
