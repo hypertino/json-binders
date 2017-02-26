@@ -11,6 +11,8 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
   extends JsonBindersFactoryApi[C, S, D] {
 
   val jacksonFactory = new JsonFactory()
+  // don't close sources, we don't own!
+  jacksonFactory.disable(JsonParser.Feature.AUTO_CLOSE_SOURCE)
 
   override def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T  = {
     val jp = jacksonFactory.createParser(jsonString)
