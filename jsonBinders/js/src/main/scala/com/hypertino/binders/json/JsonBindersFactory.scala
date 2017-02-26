@@ -2,7 +2,7 @@ package com.hypertino.binders.json
 
 import java.io.{Reader, Writer}
 
-import com.hypertino.binders.core.{Deserializer, Serializer}
+import com.hypertino.binders.core.{BindOptions, Deserializer, Serializer}
 import com.hypertino.binders.json.api.{JsonBindersFactoryApi, JsonGeneratorApi, JsonParserApi}
 import com.hypertino.inflector.naming.{Converter, PlainConverter}
 
@@ -12,13 +12,17 @@ import scala.scalajs.js.JSON
 trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C]]
   extends JsonBindersFactoryApi[C, S, D] {
 
-  override def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T = {
+  override def withStringParser[T](jsonString: String)
+                                  (codeBlock: D ⇒ T)
+                                  (implicit bindOptions: BindOptions): T = {
     val adapter = new JsParserAdapter(JSON.parse(jsonString))
     val jds = createDeserializer(adapter)
     codeBlock(jds)
   }
 
-  override def withReader[T](reader: Reader)(codeBlock: (D) ⇒ T): T = {
+  override def withReader[T](reader: Reader)
+                            (codeBlock: (D) ⇒ T)
+                            (implicit bindOptions: BindOptions): T = {
     val stringBuilder = new StringBuilder
     val len = 256
     val buffer = new Array[Char](len)
@@ -30,11 +34,15 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
     withStringParser(stringBuilder.toString())(codeBlock)
   }
 
-  def withJsonObjectParser[T](jsonObject: js.Dynamic)(codeBlock: D ⇒ T): T = {
+  def withJsonObjectParser[T](jsonObject: js.Dynamic)
+                             (codeBlock: D ⇒ T)
+                             (implicit bindOptions: BindOptions): T = {
     withJsonParserApi(new JsParserAdapter(jsonObject))(codeBlock)
   }
 
-  override def withWriter(writer: Writer)(codeBlock: S ⇒ Unit): Unit = {
+  override def withWriter(writer: Writer)
+                         (codeBlock: S ⇒ Unit)
+                         (implicit bindOptions: BindOptions): Unit = {
     withJsonGeneratorApi(new JsGeneratorAdapter(writer))(codeBlock)
   }
 }

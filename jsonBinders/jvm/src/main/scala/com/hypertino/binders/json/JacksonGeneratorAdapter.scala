@@ -1,9 +1,11 @@
 package com.hypertino.binders.json
 
 import com.fasterxml.jackson.core.JsonGenerator
+import com.hypertino.binders.core.BindOptions
 import com.hypertino.binders.json.api.JsonGeneratorApi
 
-class JacksonGeneratorAdapter(val jsonGenerator: JsonGenerator) extends JsonGeneratorApi {
+class JacksonGeneratorAdapter(val jsonGenerator: JsonGenerator)
+                             (implicit protected val bindOptions: BindOptions) extends JsonGeneratorApi {
   override def writeNull(): Unit = jsonGenerator.writeNull()
   override def writeInt(value: Int): Unit = jsonGenerator.writeNumber(value)
   override def writeLong(value: Long): Unit = jsonGenerator.writeNumber(value)

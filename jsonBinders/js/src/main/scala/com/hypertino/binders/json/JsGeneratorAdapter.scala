@@ -2,13 +2,16 @@ package com.hypertino.binders.json
 
 import java.io.Writer
 
+import com.hypertino.binders.core.BindOptions
 import com.hypertino.binders.json.api.JsonGeneratorApi
 
 import scala.collection.mutable
 import scala.scalajs.js.JSON
 
 // todo: implement pretty print
-class JsGeneratorAdapter(val writer: Writer) extends JsonGeneratorApi {
+class JsGeneratorAdapter(val writer: Writer)
+                        (implicit protected val bindOptions: BindOptions)
+  extends JsonGeneratorApi {
   private var isSequence = false
   private var prependComma = false
   private val sequenceStack = mutable.Stack[Boolean]()

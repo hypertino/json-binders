@@ -1,6 +1,6 @@
 package com.hypertino.binders.json
 
-import com.hypertino.binders.core.Deserializer
+import com.hypertino.binders.core.{BindOptions, Deserializer}
 import com.hypertino.binders.json.api._
 import com.hypertino.binders.value.{Bool, Lst, Null, Number, Obj, Text, Value}
 import com.hypertino.inflector.naming.Converter
@@ -11,8 +11,10 @@ import scala.language.experimental.macros
 
 class JsonDeserializeException(message: String) extends RuntimeException(message)
 
-class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: JsonParserApi, val moveToNextToken: Boolean, val fieldName: Option[String])
+abstract class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: JsonParserApi, val moveToNextToken: Boolean, val fieldName: Option[String])
   extends Deserializer[C] {
+
+  protected def bindOptions: BindOptions
 
   val currentToken: JsToken = if (moveToNextToken) nextToken() else jsonParser.currentToken
 
@@ -56,9 +58,9 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
     }
   }
 
-  protected def createFieldDeserializer(jsonParser: JsonParserApi, moveToNextToken: Boolean, fieldName: Option[String]): I = ??? //new JsonDeserializer[C](jsonNode, fieldName)
+  protected def createFieldDeserializer(jsonParser: JsonParserApi, moveToNextToken: Boolean, fieldName: Option[String]): I
 
-  protected def nextToken() = {
+  protected def nextToken() : JsToken = {
     val token = jsonParser.nextToken()
     if (token == null)
       throw new JsonDeserializeException("Unexpected token: " + token + " offset: " + jsonParser.location)
@@ -67,35 +69,35 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
 
   def isNull: Boolean = jsonParser.currentToken == JsNull
 
-  private def optional[T](f : () ⇒ T): Option[T] = {
+  private def optional[T](f : ⇒ T): Option[T] = {
     if (currentToken == JsNull)
       None
     else
-      Some(f())
+      Some(f)
   }
 
-  def readStringOption(): Option[String] = optional(readString)
+  def readStringOption(): Option[String] = optional(readString())
   def readString(): String = jsonParser.stringValue
-  def readIntOption(): Option[Int] = optional(readInt)
+  def readIntOption(): Option[Int] = optional(readInt())
   def readInt(): Int = jsonParser.numberValue.toInt
-  def readLongOption(): Option[Long] = optional(readLong)
+  def readLongOption(): Option[Long] = optional(readLong())
   def readLong(): Long = jsonParser.numberValue.toLong
-  def readDoubleOption(): Option[Double] = optional(readDouble)
+  def readDoubleOption(): Option[Double] = optional(readDouble())
   def readDouble(): Double = jsonParser.numberValue.toDouble
-  def readFloatOption(): Option[Float] = optional(readFloat)
+  def readFloatOption(): Option[Float] = optional(readFloat())
   def readFloat(): Float = jsonParser.numberValue.toFloat
-  def readBooleanOption(): Option[Boolean] = optional(readBoolean)
+  def readBooleanOption(): Option[Boolean] = optional(readBoolean())
   def readBoolean(): Boolean = currentToken match {
     case JsTrue ⇒ true
     case JsFalse ⇒ false
-    case other ⇒ throw new JsonDeserializeException(s"Can't be read Boolean from '$currentToken'")
+    case other ⇒ throw new JsonDeserializeException(s"Can't be read Boolean from '$other'")
   }
-  def readBigDecimalOption(): Option[BigDecimal] = optional(readBigDecimal)
+  def readBigDecimalOption(): Option[BigDecimal] = optional(readBigDecimal())
   def readBigDecimal(): BigDecimal = jsonParser.numberValue
   def readFiniteDuration(): FiniteDuration = jsonParser.numberValue.toLong.milliseconds
-  def readFiniteDurationOption(): Option[FiniteDuration] = optional(readFiniteDuration)
+  def readFiniteDurationOption(): Option[FiniteDuration] = optional(readFiniteDuration())
   def readDuration(): Duration = Duration(jsonParser.stringValue)
-  def readDurationOption: Option[Duration] = optional(readDuration)
+  def readDurationOption: Option[Duration] = optional(readDuration())
 
   def readValue(): Value = {
     jsonParser.currentToken match {
@@ -123,6 +125,7 @@ class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonParser: Js
 }
 
 class JsonDeserializer[C <: Converter] (jsonParser: JsonParserApi, override val moveToNextToken: Boolean = true, override val fieldName: Option[String] = None)
+                                       (implicit protected val bindOptions: BindOptions)
   extends JsonDeserializerBase[C, JsonDeserializer[C]](jsonParser, moveToNextToken, fieldName) {
   protected override def createFieldDeserializer(jsonParser: JsonParserApi, moveToNextToken: Boolean, fieldName: Option[String]): JsonDeserializer[C] = new JsonDeserializer[C](jsonParser, moveToNextToken, fieldName)
 }

@@ -1,4 +1,5 @@
 
+import com.hypertino.binders.core.BindOptions
 import com.hypertino.binders.json.JsonBinders
 import com.hypertino.binders.value._
 import org.scalatest.{FlatSpec, Matchers}
@@ -76,5 +77,12 @@ class TestValueJsonSerializer extends FlatSpec with Matchers {
     val o = """{"a":1,"b":"ha","c":null}""".parseJson[Value]
     val t = Obj.from("a" -> 1,"b"->"ha","c"->Null)
     assert (o === t)
+  }
+
+  it should " skip Obj null properties if skipOptionalFields is set" in {
+    implicit val bindOptions = BindOptions(skipOptionalFields = true)
+    val t = Obj.from("a" -> Number(1),"b"->Text("ha"),"c"->Null)
+    val str = t.toJson
+    assert (str === """{"a":1,"b":"ha"}""")
   }
 }

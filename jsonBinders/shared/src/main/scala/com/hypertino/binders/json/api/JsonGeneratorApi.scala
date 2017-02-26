@@ -1,5 +1,7 @@
 package com.hypertino.binders.json.api
 
+import com.hypertino.binders.core.BindOptions
+
 trait JsonGeneratorApi {
   def writeNull(): Unit
   def writeInt(value: Int): Unit
@@ -14,4 +16,5 @@ trait JsonGeneratorApi {
   def writeStartArray(): Unit
   def writeEndArray(): Unit
   def writeFieldName(name: String): Unit
+  protected def bindOptions: BindOptions
 }

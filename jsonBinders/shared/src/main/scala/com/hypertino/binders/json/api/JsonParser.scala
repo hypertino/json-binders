@@ -1,5 +1,7 @@
 package com.hypertino.binders.json.api
 
+import com.hypertino.binders.core.BindOptions
+
 trait JsonParserApi {
   def currentToken: JsToken
   def nextToken(): JsToken
@@ -7,6 +9,7 @@ trait JsonParserApi {
   def stringValue: String
   def numberValue: BigDecimal
   def location: String
+  protected def bindOptions: BindOptions
 }
 
 sealed trait JsToken

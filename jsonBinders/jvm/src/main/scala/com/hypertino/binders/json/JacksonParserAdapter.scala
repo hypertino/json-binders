@@ -1,9 +1,11 @@
 package com.hypertino.binders.json
 
 import com.fasterxml.jackson.core.JsonToken
+import com.hypertino.binders.core.BindOptions
 import com.hypertino.binders.json.api._
 
-class JacksonParserAdapter(jacksonParser: com.fasterxml.jackson.core.JsonParser) extends JsonParserApi {
+class JacksonParserAdapter(jacksonParser: com.fasterxml.jackson.core.JsonParser)
+                          (implicit protected val bindOptions: BindOptions) extends JsonParserApi {
   override def currentToken: JsToken = convertToken(jacksonParser.getCurrentToken)
   override def nextToken(): JsToken = convertToken(jacksonParser.nextToken())
 

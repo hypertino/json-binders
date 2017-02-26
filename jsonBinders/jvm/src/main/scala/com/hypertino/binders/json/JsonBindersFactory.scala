@@ -3,7 +3,7 @@ package com.hypertino.binders.json
 import java.io._
 
 import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonGenerator, JsonParser}
-import com.hypertino.binders.core.{Deserializer, Serializer}
+import com.hypertino.binders.core.{BindOptions, Deserializer, Serializer}
 import com.hypertino.binders.json.api.JsonBindersFactoryApi
 import com.hypertino.inflector.naming.{Converter, PlainConverter}
 
@@ -14,7 +14,9 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
   // don't close sources, we don't own!
   jacksonFactory.disable(JsonParser.Feature.AUTO_CLOSE_SOURCE)
 
-  override def withStringParser[T](jsonString: String)(codeBlock: D ⇒ T): T  = {
+  override def withStringParser[T](jsonString: String)
+                                  (codeBlock: D ⇒ T)
+                                  (implicit bindOptions: BindOptions): T  = {
     val jp = jacksonFactory.createParser(jsonString)
     try {
       withJacksonParser[T](jp)(codeBlock)
@@ -24,7 +26,9 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
     }
   }
 
-  def withReader[T](reader: Reader)(codeBlock: D ⇒ T): T = {
+  def withReader[T](reader: Reader)
+                   (codeBlock: D ⇒ T)
+                   (implicit bindOptions: BindOptions): T = {
     val jp = jacksonFactory.createParser(reader)
     try {
       withJacksonParser[T](jp)(codeBlock)
@@ -34,11 +38,15 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
     }
   }
 
-  def withJacksonParser[T](jsonParser: JsonParser)(codeBlock: D ⇒ T): T = {
+  def withJacksonParser[T](jsonParser: JsonParser)
+                          (codeBlock: D ⇒ T)
+                          (implicit bindOptions: BindOptions): T = {
     withJsonParserApi(new JacksonParserAdapter(jsonParser))(codeBlock)
   }
 
-  def withWriter(writer: Writer)(codeBlock: S ⇒ Unit): Unit = {
+  def withWriter(writer: Writer)
+                (codeBlock: S ⇒ Unit)
+                (implicit bindOptions: BindOptions): Unit = {
     val jg = jacksonFactory.createGenerator(writer)
     try {
       if (prettyPrint)
@@ -50,7 +58,9 @@ trait JsonBindersFactory[C <: Converter, S <: Serializer[C], D <: Deserializer[C
     }
   }
 
-  def withJacksonGenerator(jsonGenerator: JsonGenerator)(codeBlock: S ⇒ Unit): Unit = {
+  def withJacksonGenerator(jsonGenerator: JsonGenerator)
+                          (codeBlock: S ⇒ Unit)
+                          (implicit bindOptions: BindOptions): Unit = {
     withJsonGeneratorApi(new JacksonGeneratorAdapter(jsonGenerator))(codeBlock)
   }
 

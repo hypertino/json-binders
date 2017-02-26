@@ -1,11 +1,14 @@
 package com.hypertino.binders.json
 
+import com.hypertino.binders.core.BindOptions
 import com.hypertino.binders.json.api._
 
 import scala.collection.mutable
 import scala.scalajs.js
 
-class JsParserAdapter(value: Any) extends JsonParserApi {
+class JsParserAdapter(value: Any)
+                     (implicit protected val bindOptions: BindOptions)
+  extends JsonParserApi {
   private var _currentToken: JsToken = JsUnknown
   private var _currentIterator: Option[JsParserIterator] = None
   private var isEof = false
