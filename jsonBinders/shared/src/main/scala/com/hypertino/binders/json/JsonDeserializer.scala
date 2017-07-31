@@ -16,7 +16,7 @@ abstract class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonP
 
   protected def bindOptions: BindOptions
 
-  val currentToken: JsToken = if (moveToNextToken) nextToken() else jsonParser.currentToken
+  protected val currentToken: JsToken = if (moveToNextToken) nextToken() else jsonParser.currentToken
 
   def iterator(): Iterator[I] = {
     if (currentToken == JsStartArray) {
@@ -26,7 +26,11 @@ abstract class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonP
       createObjectIterator
     }
     else
-      throw new JsonDeserializeException("Couldn't iterate nonarray/nonobject field. Current token: " + currentToken)
+      throw new JsonDeserializeException("Couldn't iterate non-array/non-object field. Current token: " + currentToken)
+  }
+
+  def consume(): Unit = {
+    readValue() // todo: not very optimal, implement skipping
   }
 
   protected def createArrayIterator: Iterator[I] = new PrefetchIterator(JsEndArray, false)

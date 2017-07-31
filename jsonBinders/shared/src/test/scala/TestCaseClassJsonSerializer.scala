@@ -1,5 +1,7 @@
 
-import com.hypertino.binders.json.JsonBinders
+import com.hypertino.binders.core.FieldNotFoundException
+import com.hypertino.binders.json.{DefaultJsonBindersFactory, JsonBinders}
+import com.hypertino.inflector.naming.CamelCaseToSnakeCaseConverter
 import org.scalatest.{FlatSpec, Matchers}
 
 case class TestCaseClass(
@@ -10,6 +12,8 @@ case class TestCaseClass(
   inner1: TestDouble,
   inner2N: Option[TestDouble]
   )
+
+case class TestCaseClass2(userId: String)
 
 class TestCaseClassJsonSerializer extends FlatSpec with Matchers {
 
@@ -39,5 +43,33 @@ class TestCaseClassJsonSerializer extends FlatSpec with Matchers {
     )
     val d = """{"intVal":123,"intValN":456,"seq":[{"intVal":1},{"intVal":2}],"seqString":["a","b"],"inner1":{"doubleVal":4.1},"inner2N":{"doubleVal":0.5}}""".parseJson[TestCaseClass]
     assert (t === d)
+  }
+
+  "Json " should " deserialize class with extra fields" in {
+    val s =
+      """
+        {
+          "test":{"x":"y"},
+          "userId":"101396227229647"
+        }
+      """
+
+    s.parseJson[TestCaseClass2]
+  }
+
+  "Json " should "not deserialize class if it's inside inner field" in {
+    val s =
+      """
+        {
+          "data":{
+            "test":{"x":"y"},
+            "userId":"101396227229647"
+          }
+        }
+      """
+
+    intercept[FieldNotFoundException] {
+      s.parseJson[TestCaseClass2]
+    }
   }
 }
