@@ -12,7 +12,7 @@ lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
     name := "json-binders",
     libraryDependencies ++= Seq(
       "com.hypertino" %%% "binders" % "1.0-SNAPSHOT",
-      "org.scalamock" %%% "scalamock-scalatest-support" % "3.5.0" % "test",
+      "org.scalamock" %%% "scalamock-scalatest-support" % "3.6.0" % "test",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -32,7 +32,7 @@ lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-core" % "2.8.5"
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.9.0"
     )
   )
 
@@ -43,8 +43,8 @@ lazy val jsonBindersJVM = jsonBinders.jvm
 lazy val jsonTimeBinders = crossProject.dependsOn(jsonBinders).settings(publishSettings:_*).settings(
   name := "json-time-binders",
   libraryDependencies ++= Seq(
-    "io.github.soc" %%% "scala-java-time" % "2.0.0-M5",
-    "com.hypertino" %%% "scalamock-scalatest-support" % "3.4-SNAPSHOT" % "test",
+    "io.github.soc" %%% "scala-java-time" % "2.0.0-M12",
+    "com.hypertino" %%% "scalamock-scalatest-support" % "3.6.0" % "test",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value
   ) ++ {
     CrossVersion.partialVersion(scalaVersion.value) match {
