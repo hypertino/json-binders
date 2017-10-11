@@ -104,14 +104,14 @@ lazy val benchTest = crossProject
   .jvmSettings(
   )
 
-//lazy val benchTestJS = benchTest.js
-//
+lazy val benchTestJS = benchTest.js
+
 lazy val benchTestJVM = benchTest.jvm
 
 lazy val `json-binders-root` = project
   .in(file("."))
   .settings(publishSettings:_*)
-  .aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS, benchTestJVM)
+  .aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS, benchTestJVM, benchTestJS)
   .settings(
     publish := {},
     publishLocal := {},
