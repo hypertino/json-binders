@@ -1,4 +1,4 @@
-version in Global := "1.2-SNAPSHOT"
+version in Global := "1.2.0"
 crossScalaVersions := Seq("2.12.3", "2.11.11")
 scalaVersion in Global := "2.12.3"
 organization in Global := "com.hypertino"
