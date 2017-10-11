@@ -12,10 +12,14 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && (("$TRAVIS_BRANCH" == "master") || ("
   	# wait different time for different jobs, due to race condition releasing in sonatype
   	if [[ "$TRAVIS_JOB_NUMBER" =~ ^[[:digit:]]+\.([[:digit:]]+)$ ]]; then
   		job_number=${BASH_REMATCH[1]}
-  		wait_time=$(( ($job_number-1)*300 ))
+  		wait_time=$(( ($job_number-1)*30 ))
   		echo "Waiting for job $job_number ($TRAVIS_JOB_NUMBER) for $wait_time seconds..."
   		date
-  		travis_wait sleep $wait_time
+  		i=10
+        while (( i >= 1 )); do
+            sleep $wait_time
+            echo $(( i-- ))
+        done
   		date
   	fi
     sbt ++$TRAVIS_SCALA_VERSION publishSigned
