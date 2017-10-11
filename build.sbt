@@ -1,17 +1,14 @@
-import sbt.Keys._
-
-version in Global := "1.0-SNAPSHOT"
-
-crossScalaVersions := Seq("2.12.1", "2.11.8", "2.10.6")
-
-scalaVersion in Global := "2.12.1"
-
+version in Global := "1.2-SNAPSHOT"
+crossScalaVersions := Seq("2.12.3", "2.11.11", "2.10.6")
+scalaVersion in Global := "2.12.3"
 organization in Global := "com.hypertino"
+
+scalacOptions in Global ++= Seq("-feature", "-deprecation")
 
 lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
     name := "json-binders",
     libraryDependencies ++= Seq(
-      "com.hypertino" %%% "binders" % "1.0-SNAPSHOT",
+      "com.hypertino" %%% "binders" % "1.2-SNAPSHOT",
       "org.scalamock" %%% "scalamock-scalatest-support" % "3.5.0" % "test",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ) ++ {
@@ -32,7 +29,7 @@ lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-core" % "2.8.5"
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.9.1"
     )
   )
 
@@ -84,8 +81,8 @@ lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin
   },
   publishArtifact := false,
   publishArtifact in Test := false,
-  publish := (),
-  publishLocal := (),
+  publish := {},
+  publishLocal := {},
   resolvers ++= Seq(
     Resolver.sonatypeRepo("public")
   )
@@ -100,8 +97,16 @@ lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin
 
 //lazy val benchTestJS = benchTest.js
 //
-//lazy val benchTestJVM = benchTest.jvm
+lazy val benchTestJVM = benchTest.jvm
 
+lazy val `json-binders-root` = project.settings(publishSettings:_*).in(file(".")).
+  aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS, benchTestJVM).
+  settings(
+    publish := {},
+    publishLocal := {},
+    publishArtifact in Test := false,
+    publishArtifact := false
+  )
 
 val publishSettings = Seq(
   pomExtra := <url>https://github.com/hypertino/json-binders</url>
@@ -147,14 +152,3 @@ credentials in Global ++= (for {
   username <- Option(System.getenv().get("sonatype_username"))
   password <- Option(System.getenv().get("sonatype_password"))
 } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
-
-
-publishArtifact in Test := false
-
-publishArtifact in Global := false
-
-publish in Global := ()
-
-publishLocal in Global := ()
-
-scalacOptions in Global ++= Seq("-feature", "-deprecation")
