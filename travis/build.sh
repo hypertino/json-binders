@@ -8,15 +8,17 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && (("$TRAVIS_BRANCH" == "master") || ("
   if grep "version\s*:=.*SNAPSHOT" build.sbt; then
     sbt 'set isSnapshot := true' ++$TRAVIS_SCALA_VERSION test publishSigned
   else
-    sbt ++$TRAVIS_SCALA_VERSION test publishSigned
+    sbt ++$TRAVIS_SCALA_VERSION test
   	# wait different time for different jobs, due to race condition releasing in sonatype
   	if [[ "$TRAVIS_JOB_NUMBER" =~ ^[[:digit:]]+\.([[:digit:]]+)$ ]]; then
   		job_number=${BASH_REMATCH[1]}
-  		wait_time=$(( ($job_number-1)*20 ))
+  		wait_time=$(( ($job_number-1)*60 ))
   		echo "Waiting for job $job_number ($TRAVIS_JOB_NUMBER) for $wait_time seconds..."
+  		date
   		sleep $wait_time
+  		date
   	fi
-    sbt ++$TRAVIS_SCALA_VERSION sonatypeReleaseAll
+    sbt ++$TRAVIS_SCALA_VERSION publishSigned sonatypeReleaseAll
   fi
 else
   sbt ++$TRAVIS_SCALA_VERSION test
