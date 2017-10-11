@@ -18,7 +18,13 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && (("$TRAVIS_BRANCH" == "master") || ("
   		sleep $wait_time
   		date
   	fi
-    sbt ++$TRAVIS_SCALA_VERSION "sonatypeOpen $TRAVIS_REPO_SLUG:$TRAVIS_JOB_NUMBER" publishSigned sonatypeClose sonatypeRelease
+    sbt ++$TRAVIS_SCALA_VERSION publishSigned
+    sbt sonatypeReleaseAll || EXIT_CODE=$? && true
+    if [[ $EXIT_CODE -ne 0 ]]; then
+        NC='\033[0m'
+        RED='\033[0;31m'
+        echo -e "${RED} !!! sonatypeReleaseAll failed, please release manually !!! ${NC}"
+    fi
   fi
 else
   sbt ++$TRAVIS_SCALA_VERSION test
