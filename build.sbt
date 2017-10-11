@@ -5,7 +5,9 @@ organization in Global := "com.hypertino"
 
 scalacOptions in Global ++= Seq("-feature", "-deprecation")
 
-lazy val jsonBinders = crossProject.settings(publishSettings:_*).settings(
+lazy val jsonBinders = crossProject
+  .settings(publishSettings:_*)
+  .settings(
     name := "json-binders",
     libraryDependencies ++= Seq(
       "com.hypertino" %%% "binders" % "1.2-SNAPSHOT",
@@ -37,7 +39,10 @@ lazy val jsonBindersJS = jsonBinders.js
 
 lazy val jsonBindersJVM = jsonBinders.jvm
 
-lazy val jsonTimeBinders = crossProject.dependsOn(jsonBinders).settings(publishSettings:_*).settings(
+lazy val jsonTimeBinders = crossProject
+  .dependsOn(jsonBinders)
+  .settings(publishSettings:_*)
+  .settings(
   name := "json-time-binders",
   libraryDependencies ++= Seq(
     "io.github.soc" %%% "scala-java-time" % "2.0.0-M5",
@@ -66,7 +71,11 @@ lazy val jsonTimeBindersJS = jsonTimeBinders.js
 
 lazy val jsonTimeBindersJVM = jsonTimeBinders.jvm
 
-lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin).settings(
+lazy val benchTest = crossProject
+  .dependsOn(jsonBinders)
+  .settings(publishSettings:_*)
+  .enablePlugins(JmhPlugin)
+  .settings(
   name := "bench-test",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "upickle" % "0.4.4",
@@ -99,9 +108,11 @@ lazy val benchTest = crossProject.dependsOn(jsonBinders).enablePlugins(JmhPlugin
 //
 lazy val benchTestJVM = benchTest.jvm
 
-lazy val `json-binders-root` = project.settings(publishSettings:_*).in(file(".")).
-  aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS, benchTestJVM).
-  settings(
+lazy val `json-binders-root` = project
+  .in(file("."))
+  .settings(publishSettings:_*)
+  .aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS, benchTestJVM)
+  .settings(
     publish := {},
     publishLocal := {},
     publishArtifact in Test := false,
