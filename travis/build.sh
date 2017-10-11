@@ -18,7 +18,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && (("$TRAVIS_BRANCH" == "master") || ("
   		sleep $wait_time
   		date
   	fi
-    sbt ++$TRAVIS_SCALA_VERSION 'sonatypeOpen "$TRAVIS_REPO_SLUG:$TRAVIS_JOB_NUMBER"' publishSigned sonatypeRelease
+    sbt ++$TRAVIS_SCALA_VERSION "sonatypeOpen $TRAVIS_REPO_SLUG:$TRAVIS_JOB_NUMBER" publishSigned sonatypeClose sonatypeRelease
   fi
 else
   sbt ++$TRAVIS_SCALA_VERSION test
