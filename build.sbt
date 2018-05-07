@@ -1,6 +1,6 @@
 version in Global := "1.2.0"
-crossScalaVersions := Seq("2.12.3", "2.11.11")
-scalaVersion in Global := "2.12.3"
+crossScalaVersions := Seq("2.12.4", "2.11.12")
+scalaVersion in Global := "2.12.4"
 organization in Global := "com.hypertino"
 
 scalacOptions in Global ++= Seq("-feature", "-deprecation")
@@ -10,7 +10,7 @@ lazy val jsonBinders = crossProject
   .settings(
     name := "json-binders",
     libraryDependencies ++= Seq(
-      "com.hypertino" %%% "binders" % "1.2.0",
+      "com.hypertino" %%% "binders" % "1.2.7",
       "org.scalamock" %%% "scalamock-scalatest-support" % "3.5.0" % "test",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ) ++ {
@@ -144,8 +144,8 @@ val publishSettings = Seq(
         <url>https://github.com/hypertino</url>
       </developer>
     </developers>,
-  pgpSecretRing := file("./travis/ht-oss-private.asc"),
-  pgpPublicRing := file("./travis/ht-oss-public.asc"),
+  pgpSecretRing := file("./travis/script/ht-oss-private.asc"),
+  pgpPublicRing := file("./travis/script/ht-oss-public.asc"),
   usePgpKeyHex("F8CDEF49B0EDEDCC"),
   pgpPassphrase := Option(System.getenv().get("oss_gpg_passphrase")).map(_.toCharArray),
   publishMavenStyle := true,
