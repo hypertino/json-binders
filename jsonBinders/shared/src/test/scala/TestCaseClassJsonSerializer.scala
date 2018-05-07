@@ -32,6 +32,19 @@ class TestCaseClassJsonSerializer extends FlatSpec with Matchers {
     assert (str === """{"intVal":123,"intValN":456,"seq":[{"intVal":1},{"intVal":2}],"seqString":["a","b"],"inner1":{"doubleVal":4.1},"inner2N":{"doubleVal":0.5}}""")
   }
 
+  it should " serialize sequence of complex class" in {
+    val t = Seq(TestCaseClass(
+      123,
+      Some(456),
+      List(TestInt(1), TestInt(2)),
+      List("a","b"),
+      TestDouble(4.1),
+      Some(TestDouble(0.5))
+    ))
+    val str = t.toJson
+    assert (str === """[{"intVal":123,"intValN":456,"seq":[{"intVal":1},{"intVal":2}],"seqString":["a","b"],"inner1":{"doubleVal":4.1},"inner2N":{"doubleVal":0.5}}]""")
+  }
+
   "Json " should " deserialize complex class" in {
     val t = TestCaseClass(
       123,
