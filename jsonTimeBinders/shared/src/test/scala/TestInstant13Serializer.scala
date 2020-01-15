@@ -1,6 +1,6 @@
 import com.hypertino.binders.json._
 import org.scalatest.{FlatSpec, Matchers}
-import org.threeten.bp.Instant
+import java.time.Instant
 
 class TestInstant13Serializer extends FlatSpec with Matchers {
   import JsonBinders._

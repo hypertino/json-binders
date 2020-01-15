@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/hypertino/json-binders.svg)](https://travis-ci.org/hypertino/json-binders)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hypertino/json-binders_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.hypertino/json-binders_2.12)
-[![Join the chat at https://gitter.im/Hypertino/binders](https://badges.gitter.im/Hypertino/binders.svg)](https://gitter.im/Hypertino/binders?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hypertino/json-binders_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.hypertino/json-binders_2.13)
 
 [ Latest releases and snapshots](https://oss.sonatype.org/#nexus-search;gav~com.hypertino~json-binders_*~~~)
 

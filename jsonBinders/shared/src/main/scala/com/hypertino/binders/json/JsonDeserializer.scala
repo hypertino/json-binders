@@ -121,7 +121,7 @@ abstract class JsonDeserializerBase[C <: Converter, I <: Deserializer[C]] (jsonP
       case JsStartArray =>
         val array = new ArrayBuffer[Value]()
         iterator().foreach(i => array += i.asInstanceOf[JsonDeserializerBase[_,_]].readValue())
-        Lst(array)
+        Lst(array.toSeq)
 
       case _ => throw new JsonDeserializeException(s"Can't deserialize token: ${jsonParser.currentToken} at ${jsonParser.location}")
     }
