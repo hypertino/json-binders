@@ -69,38 +69,38 @@ lazy val jsonTimeBindersJS = jsonTimeBinders.js
 
 lazy val jsonTimeBindersJVM = jsonTimeBinders.jvm
 
-lazy val benchTest = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Full)
-  .dependsOn(jsonBinders)
-  .settings(publishSettings:_*)
-  .enablePlugins(JmhPlugin)
-  .settings(
-  name := "bench-test",
-  libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "upickle" % "0.9.8",
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value
-  ),
-  publishArtifact := false,
-  publishArtifact in Test := false,
-  publish := {},
-  publishLocal := {},
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("public")
-  )
-)
-  .jsSettings(
-    scalaJSStage in Global := FullOptStage,
-  )
-  .jvmSettings(
-  )
-
-lazy val benchTestJS = benchTest.js
-
-lazy val benchTestJVM = benchTest.jvm
+//lazy val benchTest = crossProject(JSPlatform, JVMPlatform)
+//  .crossType(CrossType.Full)
+//  .dependsOn(jsonBinders)
+//  .settings(publishSettings:_*)
+//  .enablePlugins(JmhPlugin)
+//  .settings(
+//  name := "bench-test",
+//  libraryDependencies ++= Seq(
+//    "com.lihaoyi" %%% "upickle" % "0.9.8",
+//    "org.scala-lang" % "scala-reflect" % scalaVersion.value
+//  ),
+//  publishArtifact := false,
+//  publishArtifact in Test := false,
+//  publish := {},
+//  publishLocal := {},
+//  resolvers ++= Seq(
+//    Resolver.sonatypeRepo("public")
+//  )
+//)
+//  .jsSettings(
+//    scalaJSStage in Global := FullOptStage,
+//  )
+//  .jvmSettings(
+//  )
+//
+//lazy val benchTestJS = benchTest.js
+//
+//lazy val benchTestJVM = benchTest.jvm
 
 lazy val `json-binders-root` = project.settings(publishSettings:_*).in(file("."))
   .settings(publishSettings:_*)
-  .aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS, benchTestJVM, benchTestJS)
+  .aggregate(jsonBindersJVM, jsonBindersJS, jsonTimeBindersJVM, jsonTimeBindersJS)
   .settings(
     crossScalaVersions := Nil,
     publish / skip := true
