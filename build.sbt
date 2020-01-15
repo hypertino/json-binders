@@ -17,7 +17,7 @@ lazy val jsonBinders = crossProject(JSPlatform, JVMPlatform)
   .settings(
     crossScalaVersions := supportedScalaVersions,
     name := "json-binders",
-    version := "1.3-SNAPSHOT",
+    version := "1.3.0",
     libraryDependencies ++= Seq(
       "com.hypertino" %%% "binders" % "1.3.0",
       "org.scalamock" %%% "scalamock" % "4.4.0" % Test,
